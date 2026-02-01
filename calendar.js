@@ -1,0 +1,544 @@
+// calendar.js - सुधारित (टास्क मोडल के बटन्स के लिए)
+
+class Calendar {
+    constructor() {
+        this.currentDate = new Date();
+        this.selectedDate = new Date();
+        this.events = JSON.parse(localStorage.getItem('calendarEvents') || '[]');
+        this.tasks = JSON.parse(localStorage.getItem('calendarTasks') || '[]');
+        this.diaryEntries = JSON.parse(localStorage.getItem('diaryEntries') || '[]');
+        this.routineTasks = JSON.parse(localStorage.getItem('routineTasks') || '[]');
+        this.taskCompletions = JSON.parse(localStorage.getItem('taskCompletions') || '[]');
+        
+        // डायरी सेव बटन के लिए लिसनर यहाँ सेट करें
+        this.initTaskModalListeners();
+    }
+
+    // टास्क मोडल लिसनर्स इनिशियलाइज़ करें
+    initTaskModalListeners() {
+        // डायरी एंट्री सेव बटन
+        document.getElementById('save-diary-entry').addEventListener('click', () => {
+            this.saveDiaryEntryFromModal();
+        });
+        
+        // टास्क मोडल क्लोज बटन
+        document.getElementById('cancel-task').addEventListener('click', () => {
+            this.closeTaskModal();
+        });
+        
+        document.getElementById('close-task-modal').addEventListener('click', () => {
+            this.closeTaskModal();
+        });
+        
+        // मोडल के बाहर क्लिक करने पर बंद करें
+        document.getElementById('task-modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('task-modal')) {
+                this.closeTaskModal();
+            }
+        });
+    }
+
+    // महीने का कैलेंडर जेनरेट करें
+    generateCalendar() {
+        const calendarGrid = document.getElementById('calendar-grid');
+        calendarGrid.innerHTML = '';
+
+        const year = this.currentDate.getFullYear();
+        const month = this.currentDate.getMonth();
+
+        // महीने का पहला दिन
+        const firstDay = new Date(year, month, 1);
+        // महीने का आखिरी दिन
+        const lastDay = new Date(year, month + 1, 0);
+        // महीने में दिनों की संख्या
+        const daysInMonth = lastDay.getDate();
+        // पहले दिन का सप्ताह दिवस (0 = रविवार, 1 = सोमवार, ...)
+        const firstDayOfWeek = firstDay.getDay();
+
+        // पिछले महीने के दिन
+        const prevMonthLastDay = new Date(year, month, 0).getDate();
+
+        // पिछले महीने के दिन जोड़ें
+        for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+            const day = prevMonthLastDay - i;
+            const date = new Date(year, month - 1, day);
+            calendarGrid.appendChild(this.createDayElement(date, 'other-month'));
+        }
+
+        // इस महीने के दिन जोड़ें
+        const today = new Date();
+        for (let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(year, month, day);
+            const isToday = 
+                day === today.getDate() && 
+                month === today.getMonth() && 
+                year === today.getFullYear();
+            
+            const className = isToday ? 'today' : '';
+            calendarGrid.appendChild(this.createDayElement(date, className));
+        }
+
+        // अगले महीने के दिन जोड़ें
+        const totalCells = 42; // 6 सप्ताह * 7 दिन
+        const cellsFilled = firstDayOfWeek + daysInMonth;
+        const nextMonthDays = totalCells - cellsFilled;
+
+        for (let day = 1; day <= nextMonthDays; day++) {
+            const date = new Date(year, month + 1, day);
+            calendarGrid.appendChild(this.createDayElement(date, 'other-month'));
+        }
+    }
+
+    // दिन का एलिमेंट बनाएं
+    createDayElement(date, className) {
+        const dayElement = document.createElement('div');
+        dayElement.className = `calendar-day ${className}`;
+        dayElement.dataset.date = date.toISOString().split('T')[0];
+
+        const dayNumber = document.createElement('div');
+        dayNumber.className = 'day-number';
+        dayNumber.textContent = date.getDate();
+        
+        // तारीख क्लिक करने पर टास्क/डायरी मोडल या इवेंट मोडल खोलें
+        dayElement.addEventListener('click', () => {
+            this.handleDateClick(date);
+        });
+
+        dayElement.appendChild(dayNumber);
+
+        // इस दिन के इवेंट्स दिखाएं
+        const events = this.getEventsForDate(date);
+        if (events.length > 0) {
+            const eventsContainer = document.createElement('div');
+            eventsContainer.className = 'day-events';
+            
+            events.forEach(event => {
+                const eventElement = document.createElement('div');
+                eventElement.className = 'day-event';
+                eventElement.textContent = event.title;
+                eventElement.title = `${event.title}${event.time ? ` at ${event.time}` : ''}`;
+                eventsContainer.appendChild(eventElement);
+            });
+            
+            dayElement.appendChild(eventsContainer);
+            dayElement.classList.add('has-event');
+        }
+
+        return dayElement;
+    }
+
+    // तारीख क्लिक करने पर
+    handleDateClick(date) {
+        this.selectedDate = date;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const selectedDate = new Date(date);
+        selectedDate.setHours(0, 0, 0, 0);
+
+        if (selectedDate > today) {
+            // भविष्य की तारीख - इवेंट एड करें
+            this.openEventModal(date);
+        } else {
+            // वर्तमान या पिछली तारीख - टास्क्स और डायरी दिखाएं
+            this.openTaskModal(date);
+        }
+    }
+
+    // टास्क मोडल खोलें (सिर्फ वर्तमान/पिछली तारीख के लिए)
+    openTaskModal(date) {
+        const modal = document.getElementById('task-modal');
+        const modalDate = document.getElementById('task-modal-date');
+        const tasksList = document.getElementById('tasks-list');
+        
+        // तारीख दिखाएं
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        modalDate.textContent = date.toLocaleDateString('hi-IN', options);
+        
+        // रूटीन टास्क्स लोड करें
+        const tasks = this.routineTasks;
+        tasksList.innerHTML = '';
+        
+        if (tasks.length === 0) {
+            const emptyMsg = document.createElement('div');
+            emptyMsg.className = 'empty-tasks';
+            emptyMsg.innerHTML = `
+                <i class="fas fa-clipboard-list"></i>
+                <p>No routine tasks found</p>
+                <small>Add routine tasks from the menu → "Add Routine Tasks"</small>
+            `;
+            tasksList.appendChild(emptyMsg);
+        } else {
+            tasks.forEach((task, index) => {
+                const taskItem = this.createTaskItem(task, date);
+                tasksList.appendChild(taskItem);
+            });
+        }
+        
+        // इस तारीख के लिए डायरी एंट्री लोड करें
+        const diaryEntry = this.getDiaryEntryForDate(date);
+        if (diaryEntry) {
+            document.getElementById('diary-title-input').value = diaryEntry.title;
+            document.getElementById('diary-content-input').value = diaryEntry.content;
+        } else {
+            document.getElementById('diary-title-input').value = '';
+            document.getElementById('diary-content-input').value = '';
+        }
+        
+        // मोडल खोलें
+        modal.classList.add('active');
+    }
+
+    // टास्क आइटम बनाएं (रूटीन टास्क्स के लिए)
+    createTaskItem(task, date) {
+        const taskItem = document.createElement('div');
+        taskItem.className = 'task-item';
+        taskItem.dataset.id = task.id;
+        
+        const taskCheck = document.createElement('div');
+        taskCheck.className = 'task-check';
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.id = `task-${task.id}-${date.toISOString().split('T')[0]}`;
+        
+        // इस तारीख के लिए टास्क कम्प्लीशन स्टेटस चेक करें
+        const dateStr = date.toISOString().split('T')[0];
+        const completion = this.getTaskCompletion(task.id, dateStr);
+        checkbox.checked = completion.completed;
+        
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const currentDate = new Date(date);
+        currentDate.setHours(0, 0, 0, 0);
+        
+        // पिछली तारीखों के टास्क्स को डिसेबल करें (सिर्फ देखने के लिए)
+        if (currentDate < today) {
+            checkbox.disabled = true;
+            checkbox.title = "Cannot modify past date tasks";
+        }
+        
+        // सिर्फ वर्तमान तारीख के टास्क्स चेक/अनचेक किए जा सकते हैं
+        if (currentDate.getTime() === today.getTime()) {
+            checkbox.addEventListener('change', () => {
+                this.saveTaskCompletion(task.id, dateStr, checkbox.checked);
+                
+                // GitHub बैकअप करें
+                if (githubSync && githubSync.autoSync) {
+                    githubSync.autoBackup();
+                }
+            });
+        } else if (currentDate > today) {
+            // भविष्य की तारीखों के टास्क्स को डिसेबल करें
+            checkbox.disabled = true;
+            checkbox.title = "Cannot modify future date tasks";
+        }
+        
+        taskCheck.appendChild(checkbox);
+        
+        const taskContent = document.createElement('div');
+        taskContent.className = 'task-content';
+        
+        const taskTitle = document.createElement('div');
+        taskTitle.className = `task-title ${checkbox.checked ? 'task-completed' : ''}`;
+        taskTitle.textContent = task.title;
+        
+        taskContent.appendChild(taskTitle);
+        
+        // टास्क नोट्स (अगर है तो)
+        if (task.notes) {
+            const taskNotes = document.createElement('div');
+            taskNotes.className = 'task-notes';
+            taskNotes.textContent = task.notes;
+            taskContent.appendChild(taskNotes);
+        }
+        
+        taskItem.appendChild(taskCheck);
+        taskItem.appendChild(taskContent);
+        
+        return taskItem;
+    }
+
+    // टास्क मोडल बंद करें
+    closeTaskModal() {
+        document.getElementById('task-modal').classList.remove('active');
+    }
+
+    // डायरी एंट्री सेव करें (मोडल से)
+    saveDiaryEntryFromModal() {
+        const title = document.getElementById('diary-title-input').value.trim();
+        const content = document.getElementById('diary-content-input').value.trim();
+        const dateStr = this.selectedDate.toISOString().split('T')[0];
+        
+        if (!title) {
+            this.showNotification('Please enter diary entry title', 'error');
+            return;
+        }
+        
+        if (!content) {
+            this.showNotification('Please write your experience', 'error');
+            return;
+        }
+        
+        const diaryEntry = {
+            title: title,
+            content: content,
+            date: dateStr,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+        };
+        
+        this.saveDiaryEntry(diaryEntry);
+        this.closeTaskModal();
+    }
+
+    // इवेंट मोडल खोलें
+    openEventModal(date) {
+        const modal = document.getElementById('event-modal');
+        const dateInput = document.getElementById('event-date-input');
+        
+        // तारीख सेट करें
+        const dateStr = date.toISOString().split('T')[0];
+        dateInput.value = dateStr;
+        
+        // मोडल खोलें
+        modal.classList.add('active');
+        
+        // टाइटल फोकस करें
+        setTimeout(() => {
+            document.getElementById('event-title-input').focus();
+        }, 100);
+    }
+
+    // महीने बदलें
+    prevMonth() {
+        this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+        this.updateCalendar();
+    }
+
+    nextMonth() {
+        this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+        this.updateCalendar();
+    }
+
+    // आज की तारीख पर जाएं
+    goToToday() {
+        this.currentDate = new Date();
+        this.updateCalendar();
+    }
+
+    // कैलेंडर अपडेट करें
+    updateCalendar() {
+        this.generateCalendar();
+        this.updateMonthDisplay();
+    }
+
+    // महीने का नाम अपडेट करें
+    updateMonthDisplay() {
+        const monthNames = [
+            "January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+        const monthName = monthNames[this.currentDate.getMonth()];
+        const year = this.currentDate.getFullYear();
+        document.getElementById('current-month').textContent = `${monthName} ${year}`;
+    }
+
+    // तारीख के लिए इवेंट्स लोड करें
+    getEventsForDate(date) {
+        const dateStr = date.toISOString().split('T')[0];
+        return this.events.filter(event => event.date === dateStr);
+    }
+
+    // तारीख के लिए डायरी एंट्री लोड करें
+    getDiaryEntryForDate(date) {
+        const dateStr = date.toISOString().split('T')[0];
+        return this.diaryEntries.find(entry => entry.date === dateStr);
+    }
+
+    // रूटीन टास्क्स लोड करें (सभी दिनों के लिए)
+    getRoutineTasks() {
+        return this.routineTasks;
+    }
+
+    // टास्क कम्प्लीशन स्टेटस लोड करें
+    getTaskCompletion(taskId, dateStr) {
+        const completion = this.taskCompletions.find(
+            comp => comp.taskId === taskId && comp.date === dateStr
+        );
+        return completion || { taskId, date: dateStr, completed: false };
+    }
+
+    // टास्क कम्प्लीशन सेव करें
+    saveTaskCompletion(taskId, dateStr, completed) {
+        const index = this.taskCompletions.findIndex(
+            comp => comp.taskId === taskId && comp.date === dateStr
+        );
+        
+        if (index > -1) {
+            this.taskCompletions[index].completed = completed;
+            this.taskCompletions[index].updatedAt = new Date().toISOString();
+        } else {
+            this.taskCompletions.push({
+                taskId,
+                date: dateStr,
+                completed,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            });
+        }
+        
+        localStorage.setItem('taskCompletions', JSON.stringify(this.taskCompletions));
+    }
+
+    // इवेंट सेव करें
+    saveEvent(eventData) {
+        this.events.push(eventData);
+        localStorage.setItem('calendarEvents', JSON.stringify(this.events));
+        this.updateCalendar();
+        this.showNotification('Event saved successfully!', 'success');
+        
+        // GitHub बैकअप करें
+        if (githubSync && githubSync.autoSync) {
+            githubSync.autoBackup();
+        }
+    }
+
+    // रूटीन टास्क्स सेव करें (मल्टीपल)
+    saveRoutineTasks(taskList) {
+        // पहले से मौजूद टास्क्स के आईडी सेव करें
+        const existingIds = this.routineTasks.map(task => task.id);
+        
+        // नए टास्क्स फिल्टर करें (जिनके आईडी नहीं हैं या नए हैं)
+        const newTasks = taskList.filter(task => {
+            return !existingIds.includes(task.id);
+        });
+        
+        // नए टास्क्स एड करें
+        newTasks.forEach(task => {
+            this.routineTasks.push(task);
+        });
+        
+        localStorage.setItem('routineTasks', JSON.stringify(this.routineTasks));
+        
+        if (newTasks.length > 0) {
+            this.showNotification(`${newTasks.length} routine tasks saved successfully!`, 'success');
+            
+            // GitHub बैकअप करें
+            if (githubSync && githubSync.autoSync) {
+                githubSync.autoBackup();
+            }
+        }
+        
+        return newTasks.length;
+    }
+
+    // रूटीन टास्क डिलीट करें
+    deleteRoutineTask(taskId) {
+        const initialLength = this.routineTasks.length;
+        this.routineTasks = this.routineTasks.filter(task => task.id !== taskId);
+        
+        // इस टास्क की सभी कम्प्लीशन हिस्ट्री भी डिलीट करें
+        this.taskCompletions = this.taskCompletions.filter(comp => comp.taskId !== taskId);
+        
+        localStorage.setItem('routineTasks', JSON.stringify(this.routineTasks));
+        localStorage.setItem('taskCompletions', JSON.stringify(this.taskCompletions));
+        
+        if (this.routineTasks.length < initialLength) {
+            this.showNotification('Routine task deleted successfully!', 'success');
+            
+            // GitHub बैकअप करें
+            if (githubSync && githubSync.autoSync) {
+                githubSync.autoBackup();
+            }
+        }
+    }
+
+    // डायरी एंट्री सेव करें
+    saveDiaryEntry(entryData) {
+        const existingIndex = this.diaryEntries.findIndex(entry => entry.date === entryData.date);
+        if (existingIndex > -1) {
+            // एक्सिस्टिंग एंट्री को अपडेट करें (उसी कार्ड में)
+            this.diaryEntries[existingIndex] = {
+                ...this.diaryEntries[existingIndex],
+                ...entryData,
+                updatedAt: new Date().toISOString()
+            };
+        } else {
+            // नई एंट्री बनाएं
+            entryData.id = Date.now();
+            entryData.createdAt = new Date().toISOString();
+            entryData.updatedAt = new Date().toISOString();
+            this.diaryEntries.push(entryData);
+        }
+        
+        localStorage.setItem('diaryEntries', JSON.stringify(this.diaryEntries));
+        this.showNotification('Diary entry saved successfully!', 'success');
+        
+        // GitHub बैकअप करें
+        if (githubSync && githubSync.autoSync) {
+            githubSync.autoBackup();
+        }
+        
+        // डायरी व्यू अपडेट करें (अगर डायरी व्यू खुला है)
+        if (diaryManager) {
+            diaryManager.updateDiaryView();
+        }
+    }
+
+    // सर्च करें
+    search(query) {
+        if (!query) return [];
+        
+        const results = [];
+        const searchLower = query.toLowerCase();
+        
+        // इवेंट्स में सर्च
+        this.events.forEach(event => {
+            if (event.title.toLowerCase().includes(searchLower) || 
+                (event.notes && event.notes.toLowerCase().includes(searchLower))) {
+                results.push({
+                    type: 'event',
+                    title: event.title,
+                    date: event.date,
+                    data: event
+                });
+            }
+        });
+        
+        // डायरी एंट्रीज में सर्च
+        this.diaryEntries.forEach(entry => {
+            if (entry.title.toLowerCase().includes(searchLower) || 
+                entry.content.toLowerCase().includes(searchLower)) {
+                results.push({
+                    type: 'diary',
+                    title: entry.title,
+                    date: entry.date,
+                    data: entry
+                });
+            }
+        });
+        
+        return results;
+    }
+
+    // नोटिफिकेशन दिखाएं
+    showNotification(message, type = 'info') {
+        // पहले की नोटिफिकेशन हटाएं
+        const existing = document.querySelector('.notification');
+        if (existing) existing.remove();
+        
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        
+        document.body.appendChild(notification);
+        
+        // 3 सेकंड बाद हटाएं
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+}
+
+// ग्लोबल कैलेंडर इंस्टेंस
+window.calendar = new Calendar();

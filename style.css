@@ -1,0 +1,1229 @@
+/* style.css - अपडेटेड CSS */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    display: flex;
+    height: 100vh;
+    background-color: #f8f9fa;
+    color: #333;
+    overflow: hidden;
+    width: 100vw;
+    position: fixed;
+}
+
+/* हैमबर्गर मेनू साइडबार */
+.sidebar {
+    width: 280px;
+    background-color: #fff;
+    border-right: 1px solid #ddd;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    position: fixed;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.sidebar.active {
+    transform: translateX(0);
+}
+
+.app-name {
+    padding: 24px 20px;
+    font-size: 28px;
+    font-weight: 700;
+    color: #1a73e8;
+    border-bottom: 1px solid #eee;
+    background-color: #f8f9fa;
+}
+
+.view-selection {
+    padding: 16px 0;
+    border-bottom: 1px solid #eee;
+}
+
+/* बोल्ड बटन्स */
+.menu-item {
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    color: #202124;
+    transition: background-color 0.2s;
+    border-left: 4px solid transparent;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.menu-item:hover, .menu-item:active {
+    background-color: #f1f3f4;
+    color: #1a73e8;
+}
+
+.menu-item.active {
+    background-color: #e8f0fe;
+    color: #1a73e8;
+    border-left-color: #1a73e8;
+    font-weight: 700;
+}
+
+.menu-item i {
+    font-size: 20px;
+    width: 24px;
+    text-align: center;
+}
+
+/* मुख्य कंटेंट एरिया */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #fff;
+}
+
+/* टॉप नेविगेशन बार */
+.top-nav {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    gap: 12px;
+    flex-wrap: wrap;
+    min-height: 64px;
+}
+
+.menu-toggle {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #5f6368;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.menu-toggle:hover, .menu-toggle:active {
+    background-color: #f1f3f4;
+}
+
+.month-year-selector {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-grow: 1;
+}
+
+.nav-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #5f6368;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.nav-btn:hover, .nav-btn:active {
+    background-color: #f1f3f4;
+}
+
+.current-month {
+    font-size: 18px;
+    font-weight: 600;
+    color: #3c4043;
+    flex-grow: 1;
+    min-width: 120px;
+    text-align: center;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    background-color: #f1f3f4;
+    border-radius: 8px;
+    padding: 10px 14px;
+    flex-grow: 1;
+    min-width: 150px;
+    order: 3;
+    width: 100%;
+    margin-top: 8px;
+    position: relative;
+}
+
+.search-bar i {
+    color: #5f6368;
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+.search-bar input {
+    border: none;
+    background: none;
+    outline: none;
+    font-size: 16px;
+    width: 100%;
+    color: #3c4043;
+    font-weight: 500;
+}
+
+.today-btn {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.today-btn:hover, .today-btn:active {
+    background-color: #0d62d9;
+}
+
+/* कैलेंडर व्यू */
+.calendar-view {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+    width: 100%;
+    height: calc(100vh - 120px);
+}
+
+.calendar-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+    font-weight: 600;
+    color: #5f6368;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.day-header {
+    padding: 12px 4px;
+    text-align: center;
+    border-right: 1px solid #eee;
+    font-size: 14px;
+}
+
+.day-header:last-child {
+    border-right: none;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-top: none;
+    min-height: calc(100vh - 180px);
+}
+
+.calendar-day {
+    padding: 8px 4px;
+    border-right: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    min-height: 80px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.calendar-day:hover {
+    background-color: #f8f9fa;
+}
+
+.calendar-day:nth-child(7n) {
+    border-right: none;
+}
+
+.calendar-day.other-month {
+    background-color: #f8f9fa;
+    color: #9aa0a6;
+}
+
+.calendar-day.today {
+    background-color: #e8f0fe;
+    border: 2px solid #1a73e8;
+    font-weight: 700;
+}
+
+.calendar-day.has-event {
+    background-color: #fff8e1;
+}
+
+.day-number {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    text-align: center;
+    padding: 2px;
+}
+
+/* सिर्फ इवेंट्स दिखाएं - टास्क्स नहीं */
+.day-events {
+    margin-top: 4px;
+}
+
+.day-event {
+    background-color: #e8f0fe;
+    border-left: 3px solid #1a73e8;
+    padding: 3px 6px;
+    margin-bottom: 3px;
+    border-radius: 3px;
+    font-size: 11px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-weight: 500;
+}
+
+/* रिमाइंडर व्यू */
+.reminders-view, .diary-view {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+    width: 100%;
+    height: calc(100vh - 120px);
+    background-color: #fff;
+}
+
+.reminders-header, .diary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.reminders-header h2, .diary-header h2 {
+    font-size: 20px;
+    color: #202124;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.reminders-header h2 i {
+    color: #1a73e8;
+}
+
+.diary-header h2 i {
+    color: #673ab7;
+}
+
+/* रिमाइंडर लिस्ट */
+.reminders-list, .diary-cards {
+    padding: 0 16px;
+}
+
+.reminder-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid #eee;
+    gap: 12px;
+}
+
+.reminder-item:last-child {
+    border-bottom: none;
+}
+
+.reminder-content {
+    flex: 1;
+}
+
+.reminder-title {
+    font-weight: 600;
+    color: #202124;
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.reminder-date {
+    font-size: 14px;
+    color: #5f6368;
+    font-weight: 500;
+}
+
+/* डायरी कार्ड्स */
+.diary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.diary-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid #e0e0e0;
+}
+
+.diary-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.diary-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.diary-card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a73e8;
+    margin: 0;
+    flex: 1;
+}
+
+.diary-card-date {
+    font-size: 12px;
+    color: #5f6368;
+    background: #f1f3f4;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.diary-card-content {
+    color: #5f6368;
+    font-size: 14px;
+    line-height: 1.5;
+    max-height: 100px;
+    overflow: hidden;
+    position: relative;
+}
+
+.diary-card-content::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: linear-gradient(to bottom, transparent, white);
+}
+
+.empty-diary {
+    text-align: center;
+    padding: 60px 20px;
+    color: #5f6368;
+    grid-column: 1 / -1;
+}
+
+.empty-diary i {
+    font-size: 64px;
+    color: #dadce0;
+    margin-bottom: 20px;
+}
+
+.empty-diary h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #202124;
+}
+
+.empty-diary p {
+    font-size: 16px;
+    margin-bottom: 30px;
+}
+
+/* मोडल्स */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.full-diary-modal {
+    max-width: 700px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-header h3 {
+    font-size: 20px;
+    color: #202124;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+}
+
+.modal-header h3 i {
+    color: #1a73e8;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #5f6368;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.close-modal:hover, .close-modal:active {
+    background-color: #f1f3f4;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: #202124;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #1a73e8;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+    font-family: inherit;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px;
+    border-top: 1px solid #eee;
+}
+
+.btn-cancel {
+    background-color: #f1f3f4;
+    color: #202124;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-cancel:hover, .btn-cancel:active {
+    background-color: #e8eaed;
+}
+
+.btn-save {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-save:hover, .btn-save:active {
+    background-color: #0d62d9;
+}
+
+.btn-delete {
+    background-color: #ea4335;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-delete:hover, .btn-delete:active {
+    background-color: #d32f2f;
+}
+
+/* टास्क मोडल स्पेशल स्टाइल्स */
+.tasks-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.task-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+    gap: 12px;
+}
+
+.task-check {
+    flex-shrink: 0;
+}
+
+.task-check input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 2px solid #dadce0;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: all 0.2s;
+}
+
+.task-check input[type="checkbox"]:checked {
+    background-color: #1a73e8;
+    border-color: #1a73e8;
+    position: relative;
+}
+
+.task-check input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    color: white;
+    font-size: 12px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.task-check input[type="checkbox"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.task-content {
+    flex: 1;
+}
+
+.task-title {
+    font-weight: 500;
+    color: #202124;
+    font-size: 16px;
+}
+
+.task-completed {
+    text-decoration: line-through;
+    color: #5f6368;
+    opacity: 0.7;
+}
+
+.task-input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.task-input-group:last-child {
+    border-bottom: none;
+}
+
+.btn-add-task {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.btn-add-task:hover, .btn-add-task:active {
+    background-color: #0d62d9;
+}
+
+.diary-entry-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+/* डायरी फुल व्यू */
+.diary-entry-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.diary-entry-date, .diary-entry-time {
+    font-size: 14px;
+    color: #5f6368;
+    font-weight: 500;
+}
+
+.diary-entry-content {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #202124;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* सर्च रिजल्ट्स */
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    margin-top: 8px;
+}
+
+.search-result-item {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.search-result-item:hover {
+    background-color: #f1f3f4;
+}
+
+.search-result-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.search-result-date {
+    font-size: 12px;
+    color: #5f6368;
+}
+
+/* स्टेटस बार */
+.status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    background-color: #fff;
+    border-top: 1px solid #ddd;
+    font-size: 14px;
+    color: #5f6368;
+    height: 56px;
+    flex-shrink: 0;
+}
+
+.time-display {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.status-icons {
+    display: flex;
+    gap: 16px;
+    font-weight: 500;
+}
+
+/* ओवरले */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+}
+
+.overlay.active {
+    display: block;
+}
+
+/* नोटिफिकेशन */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    z-index: 2000;
+    animation: slideIn 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.notification.success {
+    background-color: #34a853;
+}
+
+.notification.error {
+    background-color: #ea4335;
+}
+
+.notification.info {
+    background-color: #1a73e8;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* नए स्टाइल्स - मल्टीपल टास्क्स के लिए */
+.tasks-input-container {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+    padding-right: 5px;
+}
+
+.btn-add-more {
+    background-color: #34a853;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background-color 0.2s;
+    width: 100%;
+    justify-content: center;
+}
+
+.btn-add-more:hover, .btn-add-more:active {
+    background-color: #2d9448;
+}
+
+.add-more-tasks {
+    margin-bottom: 20px;
+}
+
+.form-help {
+    font-size: 12px;
+    color: #5f6368;
+    margin-top: 4px;
+    display: block;
+    font-style: italic;
+}
+
+/* रूटीन इन्फो */
+.routine-info {
+    background-color: #e8f0fe;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid #1a73e8;
+}
+
+.routine-info p {
+    margin: 0;
+    color: #1a73e8;
+    font-size: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.routine-info i {
+    margin-top: 2px;
+}
+
+/* टास्क कार्ड्स के लिए */
+.task-card {
+    border-left: 4px solid #1a73e8;
+}
+
+.task-card .diary-card-title i {
+    color: #1a73e8;
+}
+
+.diary-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+    font-size: 12px;
+}
+
+.entry-type {
+    background-color: #f1f3f4;
+    padding: 2px 8px;
+    border-radius: 4px;
+    color: #5f6368;
+}
+
+.task-status {
+    background-color: #e8f0fe;
+    color: #1a73e8;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+/* खाली टास्क्स मैसेज */
+.empty-tasks {
+    text-align: center;
+    padding: 40px 20px;
+    color: #5f6368;
+}
+
+.empty-tasks i {
+    font-size: 48px;
+    color: #dadce0;
+    margin-bottom: 15px;
+}
+
+.empty-tasks p {
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #202124;
+}
+
+.empty-tasks small {
+    font-size: 14px;
+    color: #9aa0a6;
+}
+
+/* सेटिंग्स मोडल के लिए */
+.backup-info {
+    background-color: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 20px;
+    border-left: 4px solid #34a853;
+}
+
+.backup-info p {
+    margin: 0;
+    color: #5f6368;
+    font-size: 14px;
+}
+
+.backup-info i {
+    color: #34a853;
+    margin-right: 8px;
+}
+
+.btn-test {
+    background-color: #fbbc04;
+    color: #202124;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-test:hover, .btn-test:active {
+    background-color: #e6ac00;
+}
+
+/* डायरी फुल व्यू में लिस्ट स्टाइल */
+#diary-full-content ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+#diary-full-content li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+#diary-full-content li:last-child {
+    border-bottom: none;
+}
+
+#diary-full-content h4 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: #1a73e8;
+}
+
+#diary-full-content small {
+    color: #5f6368;
+    font-size: 12px;
+    margin-left: 10px;
+}
+
+/* टास्क नोट्स */
+.task-notes {
+    font-size: 12px;
+    color: #5f6368;
+    margin-top: 4px;
+    font-style: italic;
+    border-left: 2px solid #dadce0;
+    padding-left: 8px;
+}
+
+/* नए टास्क एड मोडल */
+#add-task-modal .modal-content {
+    max-width: 550px;
+}
+
+/* रेस्पॉन्सिव डिज़ाइन */
+@media (min-width: 768px) {
+    .sidebar {
+        width: 300px;
+    }
+    
+    .top-nav {
+        padding: 12px 24px;
+        gap: 20px;
+        flex-wrap: nowrap;
+    }
+    
+    .search-bar {
+        order: 0;
+        width: 300px;
+        margin-top: 0;
+    }
+    
+    .current-month {
+        font-size: 22px;
+    }
+    
+    .calendar-day {
+        min-height: 100px;
+        padding: 12px 8px;
+    }
+    
+    .day-number {
+        font-size: 16px;
+    }
+    
+    .day-event {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+    
+    .reminders-list, .diary-cards {
+        padding: 0 24px;
+    }
+    
+    .diary-cards {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 24px;
+        padding: 24px;
+    }
+    
+    .diary-card {
+        padding: 24px;
+    }
+    
+    #add-task-modal .modal-content {
+        max-width: 600px;
+    }
+}
+
+@media (max-width: 767px) {
+    .diary-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .task-input-group {
+        flex-direction: column;
+        gap: 15px;
+    }
+}
+
+
+@media (max-width: 480px) {
+    .top-nav {
+        padding: 10px 12px;
+        gap: 8px;
+    }
+    
+    .current-month {
+        font-size: 16px;
+    }
+    
+    .calendar-day {
+        min-height: 70px;
+    }
+    
+    .day-event {
+        font-size: 10px;
+        padding: 2px 4px;
+    }
+    
+    .diary-card {
+        padding: 16px;
+    }
+    
+    .diary-card-title {
+        font-size: 16px;
+    }
+    
+    .modal-content {
+        max-width: 95%;
+    }
+}
+
+/* style.css में निम्नलिखित जोड़ें */
+
+/* टास्क इनपुट के साथ डिलीट बटन */
+.task-input-with-delete {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.task-input-with-delete input {
+    flex: 1;
+}
+
+.btn-delete-task {
+    background-color: #ea4335;
+    color: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.btn-delete-task:hover, .btn-delete-task:active {
+    background-color: #d32f2f;
+}
+
+/* मोडल क्लोज बटन में सुधार */
+#cancel-task, #close-task-modal {
+    background-color: #f1f3f4;
+    color: #202124;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#cancel-task:hover, #cancel-task:active,
+#close-task-modal:hover, #close-task-modal:active {
+    background-color: #e8eaed;
+}

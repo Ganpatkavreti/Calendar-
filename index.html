@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Calendar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- हैमबर्गर मेनू साइडबार -->
+    <aside class="sidebar" id="sidebar">
+        <div class="app-name">My Calendar</div>
+        
+        <div class="view-selection">
+            <div class="menu-item view-option active" data-view="month">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Month View</span>
+            </div>
+            <div class="menu-item view-option" data-view="reminders">
+                <i class="fas fa-bell"></i>
+                <span>Reminders</span>
+            </div>
+            <div class="menu-item view-option" data-view="diary">
+                <i class="fas fa-book"></i>
+                <span>Diary</span>
+            </div>
+        </div>
+        
+        <!-- टास्क एड बटन हैमबर्गर मेनू में -->
+        <div class="menu-item" id="add-task-menu-btn">
+            <i class="fas fa-plus-circle"></i>
+            <span>Add Routine Tasks</span>
+        </div>
+        
+        <div class="menu-item" id="settings-btn">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+        </div>
+    </aside>
+
+    <!-- मुख्य कंटेंट एरिया -->
+    <main class="main-content">
+        <!-- टॉप नेविगेशन बार -->
+        <header class="top-nav">
+            <button class="menu-toggle" id="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="month-year-selector">
+                <button class="nav-btn prev-month" id="prev-month">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="current-month" id="current-month">
+                    January 2024
+                </div>
+                <button class="nav-btn next-month" id="next-month">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-input" placeholder="Search events...">
+                <div class="search-results" id="search-results"></div>
+            </div>
+            
+            <button class="today-btn" id="today-btn">
+                <i class="fas fa-calendar-day"></i>
+                Today
+            </button>
+        </header>
+
+        <!-- कैलेंडर व्यू -->
+        <section class="calendar-view" id="calendar-view">
+            <!-- कैलेंडर हेडर (दिनों के नाम) -->
+            <div class="calendar-header">
+                <div class="day-header">Sun</div>
+                <div class="day-header">Mon</div>
+                <div class="day-header">Tue</div>
+                <div class="day-header">Wed</div>
+                <div class="day-header">Thu</div>
+                <div class="day-header">Fri</div>
+                <div class="day-header">Sat</div>
+            </div>
+
+            <!-- कैलेंडर दिन -->
+            <div class="calendar-grid" id="calendar-grid">
+                <!-- दिन JavaScript द्वारा जेनरेट किए जाएंगे -->
+            </div>
+        </section>
+
+        <!-- रिमाइंडर व्यू (छिपा हुआ) -->
+        <section class="reminders-view" id="reminders-view" style="display: none;">
+            <div class="reminders-header">
+                <h2><i class="fas fa-bell"></i> Reminders</h2>
+            </div>
+            
+            <div class="reminders-list" id="reminders-list">
+                <!-- रिमाइंडर लिस्ट JavaScript द्वारा जेनरेट की जाएगी -->
+            </div>
+        </section>
+
+        <!-- डायरी व्यू (छिपा हुआ) -->
+        <section class="diary-view" id="diary-view" style="display: none;">
+            <div class="diary-header">
+                <h2><i class="fas fa-book"></i> My Diary</h2>
+            </div>
+            
+            <div class="diary-cards" id="diary-cards">
+                <!-- डायरी कार्ड्स JavaScript द्वारा जेनरेट किए जाएंगे -->
+            </div>
+        </section>
+
+        <!-- स्टेटस बार (नीचे) -->
+        <footer class="status-bar">
+            <div class="time-display" id="time-display">
+                17:24
+            </div>
+            <div class="status-icons">
+                <span class="network-status">5G</span>
+                <span class="battery-status">67%</span>
+            </div>
+        </footer>
+    </main>
+
+    <!-- ओवरले (जब मेनू खुला हो) -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- मोडल्स -->
+    <!-- इवेंट एड मोडल -->
+    <div class="modal" id="event-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-calendar-plus"></i> Add Event</h3>
+                <button class="close-modal" id="close-event-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="event-title">Event Title</label>
+                    <input type="text" id="event-title-input" placeholder="Enter event title">
+                </div>
+                <div class="form-group">
+                    <label for="event-date">Date</label>
+                    <input type="date" id="event-date-input">
+                </div>
+                <div class="form-group">
+                    <label for="event-time">Time (Optional)</label>
+                    <input type="time" id="event-time-input">
+                </div>
+                <div class="form-group">
+                    <label for="event-notes">Notes (Optional)</label>
+                    <textarea id="event-notes-input" placeholder="Add any notes..." rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancel-event">Cancel</button>
+                <button class="btn-save" id="save-event">Save Event</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- टास्क मोडल (सिर्फ टास्क्स दिखाने और चेक/अनचेक करने के लिए) -->
+    <div class="modal" id="task-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-tasks"></i> Tasks for <span id="task-modal-date"></span></h3>
+                <button class="close-modal" id="close-task-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- टास्क लिस्ट -->
+                <div class="tasks-list" id="tasks-list">
+                    <!-- टास्क लिस्ट JavaScript द्वारा जेनरेट की जाएगी -->
+                </div>
+                
+                <!-- डायरी एंट्री सेक्शन (सभी तारीखों के लिए) -->
+                <div class="diary-entry-section" id="diary-entry-section">
+                    <div class="form-group">
+                        <label for="diary-title">Diary Entry Title</label>
+                        <input type="text" id="diary-title-input" placeholder="Enter title for your diary entry">
+                    </div>
+                    <div class="form-group">
+                        <label for="diary-content">Your Daily Experience</label>
+                        <textarea id="diary-content-input" placeholder="Write about your completed tasks, achievements, and thoughts..." rows="6"></textarea>
+                    </div>
+                    <button class="btn-save" id="save-diary-entry">
+                        <i class="fas fa-save"></i> Save/Update Diary Entry
+                    </button>
+                    <small class="form-help">This will create or update diary entry for this date</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancel-task">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- रूटीन टास्क एड मोडल (हैमबर्गर मेनू बटन से) -->
+    <div class="modal" id="add-task-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-plus-circle"></i> Add Routine Tasks</h3>
+                <button class="close-modal" id="close-add-task-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="routine-info">
+                    <p><i class="fas fa-info-circle"></i> Routine tasks will appear every day. They are permanent until you edit or delete them.</p>
+                </div>
+                
+                <!-- मल्टीपल टास्क्स के लिए डायनेमिक फॉर्म -->
+                <div class="tasks-input-container" id="tasks-input-container">
+                    <div class="task-input-group" data-task-index="1">
+                        <div class="form-group">
+                            <label for="add-task-title-1">Routine Task 1</label>
+                            <input type="text" id="add-task-title-1" class="task-title-input" placeholder="Enter routine task title">
+                        </div>
+                        <div class="form-group">
+                            <label for="add-task-notes-1">Notes (Optional)</label>
+                            <textarea id="add-task-notes-1" class="task-notes-input" placeholder="Add any notes..." rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- अधिक टास्क्स जोड़ने का बटन -->
+                <div class="add-more-tasks">
+                    <button type="button" class="btn-add-more" id="add-more-tasks-btn">
+                        <i class="fas fa-plus"></i> Add Another Routine Task
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancel-task">Close</button>
+
+                <button class="btn-save" id="save-all-tasks">
+                    <i class="fas fa-save"></i> Save All Routine Tasks
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- डायरी एंट्री फुल व्यू मोडल -->
+    <div class="modal" id="diary-full-view-modal">
+        <div class="modal-content full-diary-modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-book-open"></i> <span id="diary-full-title"></span></h3>
+                <button class="close-modal" id="close-diary-full-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="diary-entry-meta">
+                    <div class="diary-entry-date" id="diary-full-date"></div>
+                    <div class="diary-entry-time" id="diary-full-time"></div>
+                </div>
+                <div class="diary-entry-content" id="diary-full-content">
+                    <!-- डायरी कंटेंट यहाँ लोड होगा -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="close-diary-full-view">Close</button>
+                <button class="btn-delete" id="delete-diary-entry">Delete Entry</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- सेटिंग्स मोडल -->
+    <div class="modal" id="settings-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-cog"></i> Settings</h3>
+                <button class="close-modal" id="close-settings-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="github-token-input">GitHub Personal Access Token</label>
+                    <input type="password" id="github-token-input" placeholder="Enter GitHub token">
+                    <small class="form-help">Create token at GitHub → Settings → Developer settings → Personal access tokens</small>
+                </div>
+                <div class="form-group">
+                    <label for="gist-id-input">Gist ID (Optional - auto-generated)</label>
+                    <input type="text" id="gist-id-input" placeholder="Will be auto-generated">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="auto-sync-input">
+                        Enable Auto Backup
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="backup-frequency-input">Backup Frequency</label>
+                    <select id="backup-frequency-input">
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="manual">Manual Only</option>
+                    </select>
+                </div>
+                <div class="backup-info">
+                    <p><i class="fas fa-info-circle"></i> Backup includes: Events, Tasks, and Diary Entries</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="cancel-settings">Cancel</button>
+                <button class="btn-test" id="test-sync">
+                    <i class="fas fa-sync"></i> Test Sync
+                </button>
+                <button class="btn-save" id="save-settings">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript फाइलें -->
+    <script src="calendar.js"></script>
+    <script src="events.js"></script>
+    <script src="tasks.js"></script>
+    <script src="diary.js"></script>
+    <script src="github.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
