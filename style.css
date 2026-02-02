@@ -1733,3 +1733,332 @@ body {
 .legend-color.cisf-rh {
     background-color: #50E3C2;
 }
+/* style.css - अपडेटेड CSS (नए फीचर्स के साथ) */
+
+/* पिछला सारा CSS कोड यहाँ रहेगा, सिर्फ नए स्टाइल्स नीचे जोड़ें */
+
+/* त्योहार/इवेंट डिटेल मोडल */
+.holiday-event-modal {
+    max-width: 600px;
+}
+
+.holiday-event-section {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.holiday-event-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.holiday-event-section h4 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #202124;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.holiday-event-section h4 i {
+    color: #1a73e8;
+}
+
+.holiday-event-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.holiday-event-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 15px;
+    border-radius: 8px;
+    background: #f8f9fa;
+    border-left: 4px solid;
+    transition: all 0.2s;
+}
+
+.holiday-event-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.holiday-event-item.gh {
+    border-left-color: #FF6B6B;
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.05), rgba(255, 107, 107, 0.1));
+}
+
+.holiday-event-item.rh {
+    border-left-color: #06D6A0;
+    background: linear-gradient(135deg, rgba(6, 214, 160, 0.05), rgba(6, 214, 160, 0.1));
+}
+
+.holiday-event-item.cisf-gh {
+    border-left-color: #4A90E2;
+    background: linear-gradient(135deg, rgba(74, 144, 226, 0.05), rgba(74, 144, 226, 0.1));
+}
+
+.holiday-event-item.cisf-rh {
+    border-left-color: #50E3C2;
+    background: linear-gradient(135deg, rgba(80, 227, 194, 0.05), rgba(80, 227, 194, 0.1));
+}
+
+.holiday-event-item.event {
+    border-left-color: #1a73e8;
+    background: linear-gradient(135deg, rgba(26, 115, 232, 0.05), rgba(26, 115, 232, 0.1));
+}
+
+.holiday-event-icon {
+    font-size: 20px;
+    margin-right: 12px;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.holiday-event-content {
+    flex: 1;
+}
+
+.holiday-event-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #202124;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.holiday-event-type {
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: white;
+}
+
+.holiday-event-type.gh {
+    background-color: #FF6B6B;
+}
+
+.holiday-event-type.rh {
+    background-color: #06D6A0;
+}
+
+.holiday-event-type.cisf {
+    background-color: #4A90E2;
+}
+
+.holiday-event-type.event {
+    background-color: #1a73e8;
+}
+
+.holiday-event-details {
+    font-size: 14px;
+    color: #5f6368;
+    line-height: 1.5;
+}
+
+.holiday-event-time {
+    font-size: 12px;
+    color: #9aa0a6;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+.holiday-event-notes {
+    font-size: 13px;
+    color: #5f6368;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #ddd;
+    font-style: italic;
+}
+
+/* खाली स्टेट */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #5f6368;
+}
+
+.empty-state i {
+    font-size: 64px;
+    color: #dadce0;
+    margin-bottom: 20px;
+}
+
+.empty-state h4 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #202124;
+}
+
+.empty-state p {
+    font-size: 16px;
+    margin-bottom: 30px;
+}
+
+.btn-add-event-from-detail {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+    margin: 0 auto;
+}
+
+.btn-add-event-from-detail:hover {
+    background-color: #0d62d9;
+}
+
+/* नए मोडल फूटर बटन */
+.btn-add-event {
+    background-color: #34a853;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+}
+
+.btn-add-event:hover {
+    background-color: #2d9448;
+}
+
+/* हैमबर्गर मेनू में नए बटन के लिए स्टाइल */
+#add-event-menu-btn {
+    border-top: 1px solid #eee;
+    margin-top: 10px;
+}
+
+#add-event-menu-btn i {
+    color: #1a73e8;
+}
+
+/* कैलेंडर दिन में सुधार */
+.calendar-day.clickable {
+    cursor: pointer;
+}
+
+.calendar-day.non-clickable {
+    cursor: default;
+}
+
+.calendar-day.non-clickable:hover {
+    background-color: inherit !important;
+}
+
+/* त्योहार इंडिकेटर में सुधार */
+.holiday-indicator-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    margin-top: 3px;
+}
+
+.holiday-indicator-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 2px;
+}
+
+.holiday-indicator-dot.gh {
+    background-color: #FF6B6B;
+}
+
+.holiday-indicator-dot.rh {
+    background-color: #06D6A0;
+}
+
+.holiday-indicator-dot.cisf-gh {
+    background-color: #4A90E2;
+}
+
+.holiday-indicator-dot.cisf-rh {
+    background-color: #50E3C2;
+}
+
+.holiday-count-badge {
+    font-size: 8px;
+    background: #1a73e8;
+    color: white;
+    padding: 1px 4px;
+    border-radius: 3px;
+    margin-left: 4px;
+    font-weight: bold;
+}
+
+/* इवेंट डिलीट बटन */
+.event-delete-btn {
+    background: none;
+    border: none;
+    color: #ea4335;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+    margin-left: 8px;
+}
+
+.event-delete-btn:hover {
+    background-color: rgba(234, 67, 53, 0.1);
+}
+
+/* रिस्पॉन्सिव सुधार */
+@media (max-width: 768px) {
+    .holiday-event-modal {
+        max-width: 95%;
+        margin: 10px;
+    }
+    
+    .holiday-event-item {
+        padding: 12px;
+    }
+    
+    .holiday-event-title {
+        font-size: 14px;
+    }
+    
+    .holiday-event-details {
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .holiday-event-section h4 {
+        font-size: 16px;
+    }
+    
+    .holiday-event-item {
+        padding: 10px;
+    }
+    
+    .empty-state i {
+        font-size: 48px;
+    }
+    
+    .empty-state h4 {
+        font-size: 18px;
+    }
+}

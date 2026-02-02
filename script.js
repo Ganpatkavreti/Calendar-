@@ -1,4 +1,4 @@
-// script.js - मुख्य एप्लिकेशन लॉजिक
+// script.js - मुख्य एप्लिकेशन लॉजिक (अपडेटेड)
 
 document.addEventListener('DOMContentLoaded', function() {
     // DOM एलिमेंट्स
@@ -197,10 +197,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 // तारीख हाइलाइट करें
                 highlightDate(result.date);
                 
-                // टास्क मोडल खोलें (अगर त्योहार नहीं है)
-                if (result.type !== 'holiday') {
-                    calendar.openTaskModal(date);
-                }
+                // त्योहार/इवेंट डिटेल मोडल खोलें
+                calendar.openHolidayEventModal(date);
             });
             
             searchResults.appendChild(resultItem);

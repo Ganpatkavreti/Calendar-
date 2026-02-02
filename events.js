@@ -1,4 +1,4 @@
-// events.js - इवेंट्स मैनेजमेंट
+// events.js - अपडेटेड इवेंट्स मैनेजमेंट
 
 class EventsManager {
     constructor() {
@@ -6,6 +6,11 @@ class EventsManager {
     }
 
     initEventListeners() {
+        // हैमबर्गर मेनू इवेंट बटन
+        document.getElementById('add-event-menu-btn').addEventListener('click', () => {
+            calendar.openEventModal();
+        });
+        
         // इवेंट मोडल के बटन्स
         document.getElementById('save-event').addEventListener('click', () => this.saveEvent());
         document.getElementById('cancel-event').addEventListener('click', () => this.closeEventModal());
@@ -57,6 +62,16 @@ class EventsManager {
         // मोडल क्लोज करें और फॉर्म रीसेट करें
         this.closeEventModal();
         this.resetEventForm();
+        
+        // कैलेंडर अपडेट करें (तारीख हाइलाइट करने के लिए)
+        calendar.updateCalendar();
+        
+        // अगर त्योहार/इवेंट मोडल खुला है, तो अपडेट करें
+        const holidayEventModal = document.getElementById('holiday-event-modal');
+        if (holidayEventModal.classList.contains('active')) {
+            const selectedDate = new Date(date);
+            calendar.openHolidayEventModal(selectedDate);
+        }
     }
 
     closeEventModal() {

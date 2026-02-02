@@ -1,4 +1,4 @@
-// calendar.js - सुधारित (त्योहारों के नाम दिखाने के साथ)
+// calendar.js - अपडेटेड (नए तारीख क्लिक व्यवहार के साथ)
 
 class Calendar {
     constructor() {
@@ -17,6 +17,37 @@ class Calendar {
         // डायरी सेव बटन के लिए लिसनर यहाँ सेट करें
         this.initTaskModalListeners();
         this.initHolidayFilters();
+        this.initHolidayEventModalListeners();
+    }
+
+    // त्योहार/इवेंट मोडल लिसनर्स
+    initHolidayEventModalListeners() {
+        // मोडल क्लोज बटन
+        document.getElementById('close-holiday-event-modal').addEventListener('click', () => {
+            this.closeHolidayEventModal();
+        });
+        
+        document.getElementById('close-holiday-event-view').addEventListener('click', () => {
+            this.closeHolidayEventModal();
+        });
+        
+        // मोडल के बाहर क्लिक करने पर बंद करें
+        document.getElementById('holiday-event-modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('holiday-event-modal')) {
+                this.closeHolidayEventModal();
+            }
+        });
+        
+        // मोडल से इवेंट एड बटन
+        document.getElementById('add-event-from-modal').addEventListener('click', () => {
+            this.closeHolidayEventModal();
+            this.openEventModal(this.selectedDate);
+        });
+        
+        document.getElementById('add-event-from-detail').addEventListener('click', () => {
+            this.closeHolidayEventModal();
+            this.openEventModal(this.selectedDate);
+        });
     }
 
     // त्योहार फिल्टर लिसनर्स
@@ -115,17 +146,38 @@ class Calendar {
     // दिन का एलिमेंट बनाएं (त्योहारों के नाम के साथ)
     createDayElement(date, className) {
         const dayElement = document.createElement('div');
-        dayElement.className = `calendar-day ${className}`;
+        
+        // तारीख पर क्लिक व्यवहार तय करें
+        const hasHoliday = this.hasHolidayOnDate(date);
+        const hasEvent = this.hasEventOnDate(date);
+        
+        if (hasHoliday || hasEvent || date <= new Date()) {
+            // त्योहार/इवेंट है या पिछली/आज की तारीख - क्लिक करने योग्य
+            dayElement.className = `calendar-day ${className} clickable`;
+            dayElement.addEventListener('click', () => {
+                this.handleDateClick(date);
+            });
+        } else {
+            // भविष्य की तारीख और कोई त्योहार/इवेंट नहीं - नॉन-क्लिकेबल
+            dayElement.className = `calendar-day ${className} non-clickable`;
+        }
+        
         dayElement.dataset.date = date.toISOString().split('T')[0];
 
         const dayNumber = document.createElement('div');
         dayNumber.className = 'day-number';
         dayNumber.textContent = date.getDate();
         
-        // तारीख क्लिक करने पर टास्क/डायरी मोडल या इवेंट मोडल खोलें
-        dayElement.addEventListener('click', () => {
-            this.handleDateClick(date);
-        });
+        // त्योहार काउंट बैज जोड़ें
+        if (hasHoliday || hasEvent) {
+            const holidayCount = this.getHolidayEventCount(date);
+            if (holidayCount > 0) {
+                const countBadge = document.createElement('span');
+                countBadge.className = 'holiday-count-badge';
+                countBadge.textContent = holidayCount;
+                dayNumber.appendChild(countBadge);
+            }
+        }
 
         dayElement.appendChild(dayNumber);
 
@@ -163,6 +215,39 @@ class Calendar {
         }
 
         return dayElement;
+    }
+
+    // तारीख पर त्योहार/इवेंट की संख्या प्राप्त करें
+    getHolidayEventCount(date) {
+        let count = 0;
+        
+        // त्योहार गिनें
+        if (window.holidaysManager) {
+            const holidays = holidaysManager.getHolidaysForDate(date);
+            if (this.showFestivals) count += holidays.festivals.length;
+            if (this.showCISF) count += holidays.cisfHolidays.length;
+        }
+        
+        // इवेंट्स गिनें
+        count += this.getEventsForDate(date).length;
+        
+        return count;
+    }
+
+    // तारीख पर त्योहार है या नहीं
+    hasHolidayOnDate(date) {
+        if (!window.holidaysManager) return false;
+        
+        const holidays = holidaysManager.getHolidaysForDate(date);
+        const hasFestival = this.showFestivals && holidays.festivals.length > 0;
+        const hasCISF = this.showCISF && holidays.cisfHolidays.length > 0;
+        
+        return hasFestival || hasCISF;
+    }
+
+    // तारीख पर इवेंट है या नहीं
+    hasEventOnDate(date) {
+        return this.getEventsForDate(date).length > 0;
     }
 
     // दिन में त्योहार जोड़ें (नाम के साथ)
@@ -252,7 +337,7 @@ class Calendar {
         return holidayItem;
     }
 
-    // तारीख क्लिक करने पर
+    // तारीख क्लिक करने पर (नया व्यवहार)
     handleDateClick(date) {
         this.selectedDate = date;
         const today = new Date();
@@ -260,13 +345,156 @@ class Calendar {
         const selectedDate = new Date(date);
         selectedDate.setHours(0, 0, 0, 0);
 
-        if (selectedDate > today) {
-            // भविष्य की तारीख - इवेंट एड करें
-            this.openEventModal(date);
-        } else {
-            // वर्तमान या पिछली तारीख - टास्क्स और डायरी दिखाएं
+        // त्योहार या इवेंट है या नहीं चेक करें
+        const hasHoliday = this.hasHolidayOnDate(date);
+        const hasEvent = this.hasEventOnDate(date);
+
+        if (hasHoliday || hasEvent) {
+            // त्योहार या इवेंट है - डिटेल व्यू दिखाएं
+            this.openHolidayEventModal(date);
+        } else if (selectedDate <= today) {
+            // पिछली या आज की तारीख - टास्क मोडल दिखाएं
             this.openTaskModal(date);
         }
+        // भविष्य की तारीख और कोई त्योहार/इवेंट नहीं - कोई एक्शन नहीं
+    }
+
+    // त्योहार/इवेंट डिटेल मोडल खोलें
+    openHolidayEventModal(date) {
+        const modal = document.getElementById('holiday-event-modal');
+        const modalDate = document.getElementById('holiday-event-modal-date');
+        const holidayList = document.getElementById('holiday-list');
+        const eventList = document.getElementById('event-list');
+        const noHolidayEvent = document.getElementById('no-holiday-event');
+        
+        // तारीख दिखाएं
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        modalDate.textContent = date.toLocaleDateString('hi-IN', options);
+        
+        // त्योहार लोड करें
+        const holidays = holidaysManager ? holidaysManager.getHolidaysForDate(date) : { festivals: [], cisfHolidays: [] };
+        holidayList.innerHTML = '';
+        
+        let holidayCount = 0;
+        
+        // सामान्य त्योहार दिखाएं
+        if (this.showFestivals && holidays.festivals.length > 0) {
+            holidays.festivals.forEach(holiday => {
+                const holidayItem = this.createHolidayEventItem(holiday, false);
+                holidayList.appendChild(holidayItem);
+                holidayCount++;
+            });
+        }
+        
+        // CISF त्योहार दिखाएं
+        if (this.showCISF && holidays.cisfHolidays.length > 0) {
+            holidays.cisfHolidays.forEach(holiday => {
+                const holidayItem = this.createHolidayEventItem(holiday, true);
+                holidayList.appendChild(holidayItem);
+                holidayCount++;
+            });
+        }
+        
+        // इवेंट्स लोड करें
+        const events = this.getEventsForDate(date);
+        eventList.innerHTML = '';
+        
+        let eventCount = 0;
+        if (events.length > 0) {
+            events.forEach(event => {
+                const eventItem = this.createEventItem(event);
+                eventList.appendChild(eventItem);
+                eventCount++;
+            });
+        }
+        
+        // अगर कोई त्योहार या इवेंट नहीं है
+        if (holidayCount === 0 && eventCount === 0) {
+            noHolidayEvent.style.display = 'block';
+            document.getElementById('holiday-section').style.display = 'none';
+            document.getElementById('event-section').style.display = 'none';
+        } else {
+            noHolidayEvent.style.display = 'none';
+            document.getElementById('holiday-section').style.display = holidayCount > 0 ? 'block' : 'none';
+            document.getElementById('event-section').style.display = eventCount > 0 ? 'block' : 'none';
+        }
+        
+        // मोडल खोलें
+        modal.classList.add('active');
+    }
+
+    // त्योहार आइटम बनाएं (डिटेल व्यू के लिए)
+    createHolidayEventItem(holiday, isCisf = false) {
+        const typeInfo = holidaysManager.getHolidayTypeColor(holiday);
+        
+        const item = document.createElement('div');
+        item.className = `holiday-event-item ${isCisf ? 'cisf-' : ''}${holiday.type.toLowerCase()}`;
+        
+        const icon = isCisf ? 'fa-shield-alt' : 'fa-flag';
+        
+        item.innerHTML = `
+            <div class="holiday-event-icon">
+                <i class="fas ${icon}"></i>
+            </div>
+            <div class="holiday-event-content">
+                <div class="holiday-event-title">
+                    <span>${holiday.name}</span>
+                    <span class="holiday-event-type ${isCisf ? 'cisf' : holiday.type.toLowerCase()}">
+                        ${isCisf ? 'CISF ' : ''}${holiday.type}
+                    </span>
+                </div>
+                <div class="holiday-event-details">
+                    ${typeInfo.title}${isCisf ? ' (CISF)' : ''}
+                </div>
+            </div>
+        `;
+        
+        return item;
+    }
+
+    // इवेंट आइटम बनाएं (डिटेल व्यू के लिए)
+    createEventItem(event) {
+        const item = document.createElement('div');
+        item.className = 'holiday-event-item event';
+        
+        // डिलीट बटन
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'event-delete-btn';
+        deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+        deleteBtn.title = 'Delete Event';
+        deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (confirm('Are you sure you want to delete this event?')) {
+                this.deleteEvent(event.id);
+                this.openHolidayEventModal(this.selectedDate);
+            }
+        });
+        
+        item.innerHTML = `
+            <div class="holiday-event-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <div class="holiday-event-content">
+                <div class="holiday-event-title">
+                    <span>${event.title}</span>
+                    <span class="holiday-event-type event">EVENT</span>
+                </div>
+                <div class="holiday-event-details">
+                    ${event.notes || 'No additional details'}
+                </div>
+                ${event.time ? `<div class="holiday-event-time">Time: ${event.time}</div>` : ''}
+            </div>
+        `;
+        
+        // डिलीट बटन जोड़ें
+        item.querySelector('.holiday-event-content').appendChild(deleteBtn);
+        
+        return item;
+    }
+
+    // त्योहार/इवेंट मोडल बंद करें
+    closeHolidayEventModal() {
+        document.getElementById('holiday-event-modal').classList.remove('active');
     }
 
     // टास्क मोडल खोलें (सिर्फ वर्तमान/पिछली तारीख के लिए)
@@ -416,22 +644,49 @@ class Calendar {
         this.closeTaskModal();
     }
 
-    // इवेंट मोडल खोलें
-    openEventModal(date) {
+    // इवेंट मोडल खोलें (हैमबर्गर मेनू से)
+    openEventModal(date = null) {
         const modal = document.getElementById('event-modal');
         const dateInput = document.getElementById('event-date-input');
         
-        // तारीख सेट करें
-        const dateStr = date.toISOString().split('T')[0];
-        dateInput.value = dateStr;
+        // तारीख सेट करें (अगर दी गई है)
+        if (date) {
+            const dateStr = date.toISOString().split('T')[0];
+            dateInput.value = dateStr;
+        } else {
+            // डिफॉल्ट आज की तारीख
+            dateInput.value = new Date().toISOString().split('T')[0];
+        }
+        
+        // फॉर्म रीसेट करें
+        document.getElementById('event-title-input').value = '';
+        document.getElementById('event-time-input').value = '';
+        document.getElementById('event-notes-input').value = '';
         
         // मोडल खोलें
         modal.classList.add('active');
+        
+        // साइडबार बंद करें
+        document.getElementById('sidebar').classList.remove('active');
+        document.getElementById('overlay').classList.remove('active');
         
         // टाइटल फोकस करें
         setTimeout(() => {
             document.getElementById('event-title-input').focus();
         }, 100);
+    }
+
+    // इवेंट डिलीट करें
+    deleteEvent(eventId) {
+        this.events = this.events.filter(event => event.id !== eventId);
+        localStorage.setItem('calendarEvents', JSON.stringify(this.events));
+        this.updateCalendar();
+        this.showNotification('Event deleted successfully!', 'success');
+        
+        // GitHub बैकअप करें
+        if (githubSync && githubSync.autoSync) {
+            githubSync.autoBackup();
+        }
     }
 
     // महीने बदलें
@@ -527,7 +782,6 @@ class Calendar {
             githubSync.autoBackup();
         }
     }
-
     // रूटीन टास्क्स सेव करें (मल्टीपल)
     saveRoutineTasks(taskList) {
         // पुराने टास्क्स के आईडी सेव करें

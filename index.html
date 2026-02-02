@@ -27,7 +27,12 @@
             </div>
         </div>
         
-        <!-- टास्क एड बटन हैमबर्गर मेनू में -->
+        <!-- नए बटन्स -->
+        <div class="menu-item" id="add-event-menu-btn">
+            <i class="fas fa-calendar-plus"></i>
+            <span>Add Event</span>
+        </div>
+        
         <div class="menu-item" id="add-task-menu-btn">
             <i class="fas fa-plus-circle"></i>
             <span>Add Routine Tasks</span>
@@ -61,7 +66,7 @@
             
             <div class="search-bar">
                 <i class="fas fa-search"></i>
-                <input type="text" id="search-input" placeholder="Search events...">
+                <input type="text" id="search-input" placeholder="Search events or holidays...">
                 <div class="search-results" id="search-results"></div>
             </div>
             
@@ -158,7 +163,7 @@
     <div class="overlay" id="overlay"></div>
 
     <!-- मोडल्स -->
-    <!-- इवेंट एड मोडल -->
+    <!-- इवेंट एड मोडल (हैमबर्गर मेनू से) -->
     <div class="modal" id="event-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -186,6 +191,51 @@
             <div class="modal-footer">
                 <button class="btn-cancel" id="cancel-event">Cancel</button>
                 <button class="btn-save" id="save-event">Save Event</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- त्योहार/इवेंट डिटेल व्यू मोडल (नया) -->
+    <div class="modal" id="holiday-event-modal">
+        <div class="modal-content holiday-event-modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-calendar-day"></i> <span id="holiday-event-modal-date"></span></h3>
+                <button class="close-modal" id="close-holiday-event-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- त्योहार सेक्शन -->
+                <div class="holiday-event-section" id="holiday-section">
+                    <h4><i class="fas fa-flag"></i> Holidays & Festivals</h4>
+                    <div class="holiday-event-list" id="holiday-list">
+                        <!-- त्योहार यहाँ लोड होंगे -->
+                    </div>
+                </div>
+                
+                <!-- इवेंट्स सेक्शन -->
+                <div class="holiday-event-section" id="event-section">
+                    <h4><i class="fas fa-calendar-check"></i> Events</h4>
+                    <div class="holiday-event-list" id="event-list">
+                        <!-- इवेंट्स यहाँ लोड होंगे -->
+                    </div>
+                </div>
+                
+                <!-- कोई त्योहार/इवेंट नहीं होने पर मैसेज -->
+                <div class="no-holiday-event" id="no-holiday-event" style="display: none;">
+                    <div class="empty-state">
+                        <i class="fas fa-calendar-times"></i>
+                        <h4>No Events or Holidays</h4>
+                        <p>No events or holidays found for this date.</p>
+                        <button class="btn-add-event-from-detail" id="add-event-from-detail">
+                            <i class="fas fa-plus"></i> Add Event
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" id="close-holiday-event-view">Close</button>
+                <button class="btn-add-event" id="add-event-from-modal">
+                    <i class="fas fa-plus"></i> Add New Event
+                </button>
             </div>
         </div>
     </div>
