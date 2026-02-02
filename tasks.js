@@ -1,70 +1,93 @@
-// tasks.js - सुधारित (डुप्लीकेट लिसनर्स हटाए)
+// tasks.js - सुधारित (मल्टीपल टास्क एड और क्लोज बटन ठीक)
 
 class TasksManager {
     constructor() {
         this.taskCounter = 1;
+        this.existingTasks = [];
         this.initTaskListeners();
         this.loadExistingTasks();
     }
 
     initTaskListeners() {
         // हैमबर्गर मेनू टास्क बटन
-        document.getElementById('add-task-menu-btn').addEventListener('click', () => this.openAddTaskModal());
+        const addTaskBtn = document.getElementById('add-task-menu-btn');
+        if (addTaskBtn) {
+            addTaskBtn.addEventListener('click', () => this.openAddTaskModal());
+        }
         
         // नया टास्क एड मोडल बटन्स
-        document.getElementById('save-all-tasks').addEventListener('click', () => this.saveAllRoutineTasks());
-        document.getElementById('cancel-add-task').addEventListener('click', () => this.closeAddTaskModal());
-        document.getElementById('close-add-task-modal').addEventListener('click', () => this.closeAddTaskModal());
-        document.getElementById('add-more-tasks-btn').addEventListener('click', () => this.addAnotherTask());
+        const saveAllBtn = document.getElementById('save-all-tasks');
+        if (saveAllBtn) {
+            saveAllBtn.addEventListener('click', () => this.saveAllRoutineTasks());
+        }
+        
+        // अलग-अलग क्लोज बटन
+        const closeAddTaskBtn = document.getElementById('close-add-task-modal');
+        if (closeAddTaskBtn) {
+            closeAddTaskBtn.addEventListener('click', () => this.closeAddTaskModal());
+        }
+        
+        const cancelAddTaskBtn = document.getElementById('cancel-add-task');
+        if (cancelAddTaskBtn) {
+            cancelAddTaskBtn.addEventListener('click', () => this.closeAddTaskModal());
+        }
+        
+        const addMoreBtn = document.getElementById('add-more-tasks-btn');
+        if (addMoreBtn) {
+            addMoreBtn.addEventListener('click', () => this.addAnotherTask());
+        }
         
         // मोडल के बाहर क्लिक करने पर बंद करें
-        document.getElementById('add-task-modal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('add-task-modal')) {
-                this.closeAddTaskModal();
-            }
-        });
+        const addTaskModal = document.getElementById('add-task-modal');
+        if (addTaskModal) {
+            addTaskModal.addEventListener('click', (e) => {
+                if (e.target === addTaskModal) {
+                    this.closeAddTaskModal();
+                }
+            });
+        }
     }
 
-    // मौजूदा टास्क्स लोड करें
     loadExistingTasks() {
-        this.existingTasks = calendar.routineTasks;
+        if (calendar && calendar.routineTasks) {
+            this.existingTasks = calendar.routineTasks;
+        }
     }
 
-    // हैमबर्गर मेनू से टास्क एड मोडल खोलें
     openAddTaskModal() {
         const modal = document.getElementById('add-task-modal');
+        if (!modal) return;
         
-        // मौजूदा टास्क्स लोड करें
-        this.existingTasks = calendar.routineTasks;
+        this.loadExistingTasks();
         
-        // टास्क कंटेनर को रीसेट करें
         const container = document.getElementById('tasks-input-container');
+        if (!container) return;
+        
         container.innerHTML = '';
         
-        // मौजूदा टास्क्स दिखाएं
         if (this.existingTasks.length > 0) {
             this.taskCounter = this.existingTasks.length;
             this.existingTasks.forEach((task, index) => {
                 container.innerHTML += this.createTaskInputGroup(index + 1, task);
             });
         } else {
-            // कोई टास्क नहीं है, एक खाली फॉर्म दिखाएं
             this.taskCounter = 1;
             container.innerHTML = this.createTaskInputGroup(1);
         }
         
-        // डिलीट बटन के लिए इवेंट लिसनर्स सेट करें
         this.setupDeleteButtons();
         
-        // मोडल खोलें
         modal.classList.add('active');
         
-        // साइडबार बंद करें
         document.getElementById('sidebar').classList.remove('active');
         document.getElementById('overlay').classList.remove('active');
+        
+        setTimeout(() => {
+            const firstInput = document.getElementById('add-task-title-1');
+            if (firstInput) firstInput.focus();
+        }, 100);
     }
 
-    // टास्क इनपुट ग्रुप बनाएं (एडिट के लिए)
     createTaskInputGroup(index, task = null) {
         const title = task ? task.title : '';
         const notes = task ? (task.notes || '') : '';
@@ -91,7 +114,6 @@ class TasksManager {
         `;
     }
 
-    // डिलीट बटन सेटअप करें
     setupDeleteButtons() {
         document.querySelectorAll('.btn-delete-task').forEach(button => {
             button.addEventListener('click', (e) => {
@@ -103,95 +125,88 @@ class TasksManager {
         });
     }
 
-    // रूटीन टास्क डिलीट करें
     deleteRoutineTask(taskId) {
-        calendar.deleteRoutineTask(taskId);
-        
-        // मोडल रीफ्रेश करें
-        this.openAddTaskModal();
+        if (calendar) {
+            calendar.deleteRoutineTask(taskId);
+            this.openAddTaskModal();
+        }
     }
 
-    // एक और टास्क जोड़ें
     addAnotherTask() {
         this.taskCounter++;
         const container = document.getElementById('tasks-input-container');
+        if (!container) return;
+        
         container.insertAdjacentHTML('beforeend', this.createTaskInputGroup(this.taskCounter));
         
-        // नए इनपुट पर फोकस करें
         setTimeout(() => {
-            document.getElementById(`add-task-title-${this.taskCounter}`).focus();
+            const newInput = document.getElementById(`add-task-title-${this.taskCounter}`);
+            if (newInput) newInput.focus();
         }, 50);
         
-        // कंटेनर को स्क्रॉल करें
         container.scrollTop = container.scrollHeight;
     }
 
-    // सभी रूटीन टास्क्स सेव करें
     saveAllRoutineTasks() {
-        const taskList = [];
         const allTaskGroups = document.querySelectorAll('.task-input-group');
+        if (!allTaskGroups || allTaskGroups.length === 0) {
+            if (calendar) calendar.showNotification('Please enter at least one routine task', 'error');
+            return;
+        }
         
-        // सभी टास्क इनपुट्स से डेटा कलेक्ट करें
+        const taskList = [];
+        
         allTaskGroups.forEach((group, index) => {
             const taskId = group.getAttribute('data-task-id');
-            const title = document.getElementById(`add-task-title-${index + 1}`).value.trim();
-            const notes = document.getElementById(`add-task-notes-${index + 1}`).value.trim();
+            const titleInput = document.getElementById(`add-task-title-${index + 1}`);
+            const notesInput = document.getElementById(`add-task-notes-${index + 1}`);
             
-            if (title) { // सिर्फ टाइटल वाले टास्क्स ही सेव करें
-                const taskData = {
-                    id: taskId ? parseInt(taskId) : Date.now() + index,
-                    title: title,
-                    notes: notes || null,
-                    createdAt: taskId ? this.getTaskCreationDate(taskId) : new Date().toISOString(),
-                    updatedAt: new Date().toISOString()
-                };
-                taskList.push(taskData);
+            if (titleInput) {
+                const title = titleInput.value.trim();
+                const notes = notesInput ? notesInput.value.trim() : '';
+                
+                if (title) {
+                    const taskData = {
+                        id: taskId ? parseInt(taskId) : Date.now() + index,
+                        title: title,
+                        notes: notes || null,
+                        createdAt: taskId ? this.getTaskCreationDate(taskId) : new Date().toISOString(),
+                        updatedAt: new Date().toISOString()
+                    };
+                    taskList.push(taskData);
+                }
             }
         });
         
         if (taskList.length === 0) {
-            calendar.showNotification('Please enter at least one routine task title', 'error');
+            if (calendar) calendar.showNotification('Please enter at least one routine task title', 'error');
             return;
         }
         
-        // पहले सभी पुराने टास्क्स डिलीट करें
-        calendar.routineTasks = [];
-        
-        // फिर सभी नए टास्क्स सेव करें
-        const addedCount = calendar.saveRoutineTasks(taskList);
-        
-        // मोडल क्लोज करें
-        this.closeAddTaskModal();
-        
-        // अगर वर्तमान तारीख का टास्क मोडल खुला है, तो अपडेट करें
-        const taskModal = document.getElementById('task-modal');
-        if (taskModal.classList.contains('active')) {
-            calendar.openTaskModal(calendar.selectedDate);
+        if (calendar) {
+            const addedCount = calendar.saveRoutineTasks(taskList);
+            this.closeAddTaskModal();
+            
+            if (document.getElementById('task-modal').classList.contains('active')) {
+                calendar.openTaskModal(calendar.selectedDate);
+            }
         }
     }
 
-    // टास्क की क्रिएशन डेट प्राप्त करें
     getTaskCreationDate(taskId) {
         const task = this.existingTasks.find(t => t.id === parseInt(taskId));
         return task ? task.createdAt : new Date().toISOString();
     }
 
     closeAddTaskModal() {
-        document.getElementById('add-task-modal').classList.remove('active');
+        const modal = document.getElementById('add-task-modal');
+        if (modal) modal.classList.remove('active');
         
-        // सभी इनपुट्स क्लियर करें
-        const allTaskGroups = document.querySelectorAll('.task-input-group');
-        allTaskGroups.forEach((group, index) => {
-            const titleInput = document.getElementById(`add-task-title-${index + 1}`);
-            const notesInput = document.getElementById(`add-task-notes-${index + 1}`);
-            if (titleInput) titleInput.value = '';
-            if (notesInput) notesInput.value = '';
-        });
-        
-        // टास्क काउंटर रीसेट करें
         this.taskCounter = 1;
     }
 }
 
-// ग्लोबल टास्क्स मैनेजर
-window.tasksManager = new TasksManager();
+// इंस्टेंस बनाएं
+document.addEventListener('DOMContentLoaded', () => {
+    window.tasksManager = new TasksManager();
+});

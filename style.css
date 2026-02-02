@@ -1,4 +1,4 @@
-/* style.css - अपडेटेड CSS */
+/* style.css - अपडेटेड CSS (त्योहारों और मल्टीपल टास्क्स के साथ) */
 
 * {
     margin: 0;
@@ -215,6 +215,43 @@ body {
     height: calc(100vh - 120px);
 }
 
+/* त्योहार फिल्टर बटन */
+.holiday-filter {
+    display: flex;
+    gap: 10px;
+    padding: 10px 16px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #eee;
+}
+
+.filter-btn {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+}
+
+.filter-btn.active {
+    background: #1a73e8;
+    color: white;
+    border-color: #1a73e8;
+}
+
+.filter-btn:hover {
+    background: #f1f3f4;
+}
+
+.filter-btn.active:hover {
+    background: #0d62d9;
+}
+
 .calendar-header {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -281,6 +318,17 @@ body {
     background-color: #fff8e1;
 }
 
+/* त्योहारों के स्टाइल */
+.calendar-day.has-holiday {
+    background-color: #fff8f0;
+    border-left: 3px solid #FFD166;
+}
+
+.calendar-day.has-cisf-holiday {
+    background-color: #f0f8ff;
+    border-right: 3px solid #4A90E2;
+}
+
 .day-number {
     font-size: 14px;
     font-weight: 600;
@@ -305,6 +353,151 @@ body {
     white-space: nowrap;
     text-overflow: ellipsis;
     font-weight: 500;
+}
+
+/* त्योहार बैज */
+.day-holidays {
+    margin-top: 4px;
+}
+
+.holiday-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: white;
+    margin: 2px 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: help;
+    font-weight: 600;
+}
+
+.holiday-badge-cisf {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: white;
+    margin: 2px 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: help;
+    font-weight: 600;
+    border: 1px dashed white;
+}
+
+.holiday-label {
+    font-weight: bold;
+    font-size: 9px;
+    background: rgba(0,0,0,0.2);
+    padding: 0 3px;
+    border-radius: 2px;
+}
+
+.holiday-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 9px;
+}
+
+/* त्योहार टूलटिप */
+.holiday-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    min-width: 200px;
+    display: none;
+    margin-bottom: 5px;
+}
+
+.holiday-section {
+    margin-bottom: 10px;
+}
+
+.holiday-section:last-child {
+    margin-bottom: 0;
+}
+
+.holiday-section strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #202124;
+    font-size: 12px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 3px;
+}
+
+.holiday-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    font-size: 11px;
+    color: #5f6368;
+}
+
+.holiday-type {
+    font-size: 9px;
+    font-weight: bold;
+    color: white;
+    padding: 1px 4px;
+    border-radius: 3px;
+    min-width: 20px;
+    text-align: center;
+}
+
+.calendar-day:hover .holiday-tooltip {
+    display: block;
+}
+
+/* त्योहार लेजेंड */
+.holiday-legend {
+    display: flex;
+    gap: 15px;
+    padding: 10px 16px;
+    background: #f8f9fa;
+    border-top: 1px solid #eee;
+    font-size: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+}
+
+.legend-color.gh {
+    background-color: #FF6B6B;
+}
+
+.legend-color.rh {
+    background-color: #06D6A0;
+}
+
+.legend-color.cisf-gh {
+    background-color: #4A90E2;
+}
+
+.legend-color.cisf-rh {
+    background-color: #50E3C2;
 }
 
 /* रिमाइंडर व्यू */
@@ -702,16 +895,56 @@ body {
     opacity: 0.7;
 }
 
-.task-input-group {
-    display: flex;
-    gap: 10px;
+/* मल्टीपल टास्क इनपुट स्टाइल */
+.tasks-input-container {
+    max-height: 400px;
+    overflow-y: auto;
     margin-bottom: 15px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #eee;
+    padding-right: 5px;
 }
 
-.task-input-group:last-child {
-    border-bottom: none;
+.task-input-group {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.2s;
+}
+
+.task-input-group:hover {
+    border-color: #1a73e8;
+    background: #f1f8ff;
+}
+
+.task-input-with-delete {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.task-input-with-delete input {
+    flex: 1;
+}
+
+.btn-delete-task {
+    background-color: #ea4335;
+    color: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.btn-delete-task:hover {
+    background-color: #d32f2f;
+    transform: scale(1.05);
 }
 
 .btn-add-task {
@@ -882,7 +1115,7 @@ body {
 
 /* नए स्टाइल्स - मल्टीपल टास्क्स के लिए */
 .tasks-input-container {
-    max-height: 300px;
+    max-height: 400px;
     overflow-y: auto;
     margin-bottom: 15px;
     padding-right: 5px;
@@ -1000,7 +1233,6 @@ body {
     font-size: 14px;
     color: #9aa0a6;
 }
-
 /* सेटिंग्स मोडल के लिए */
 .backup-info {
     background-color: #f8f9fa;
@@ -1145,7 +1377,6 @@ body {
     }
 }
 
-
 @media (max-width: 480px) {
     .top-nav {
         padding: 10px 12px;
@@ -1177,53 +1408,328 @@ body {
         max-width: 95%;
     }
 }
-
-/* style.css में निम्नलिखित जोड़ें */
-
-/* टास्क इनपुट के साथ डिलीट बटन */
-.task-input-with-delete {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.task-input-with-delete input {
-    flex: 1;
-}
-
-.btn-delete-task {
-    background-color: #ea4335;
-    color: white;
-    border: none;
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    cursor: pointer;
+/* त्योहारों के नए स्टाइल (नाम दिखाने के लिए) */
+.holiday-item-normal, .holiday-item-cisf {
     display: flex;
     align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s;
-    flex-shrink: 0;
-}
-
-.btn-delete-task:hover, .btn-delete-task:active {
-    background-color: #d32f2f;
-}
-
-/* मोडल क्लोज बटन में सुधार */
-#cancel-task, #close-task-modal {
-    background-color: #f1f3f4;
-    color: #202124;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 14px;
+    gap: 4px;
+    margin: 2px 0;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 9px;
     font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    cursor: help;
+    transition: all 0.2s;
 }
 
-#cancel-task:hover, #cancel-task:active,
-#close-task-modal:hover, #close-task-modal:active {
-    background-color: #e8eaed;
+.holiday-item-normal:hover, .holiday-item-cisf:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.holiday-item-normal {
+    background-color: rgba(255, 107, 107, 0.1);
+    border-left: 3px solid;
+}
+
+.holiday-item-cisf {
+    background-color: rgba(74, 144, 226, 0.1);
+    border-right: 3px solid;
+}
+
+.holiday-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-right: 4px;
+}
+
+.holiday-name-short {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #202124;
+    font-weight: 600;
+}
+
+/* त्योहारों के लिए GH/RH लेबल */
+.holiday-type-label {
+    font-size: 7px;
+    font-weight: bold;
+    padding: 1px 3px;
+    border-radius: 2px;
+    margin-left: 4px;
+    color: white;
+}
+
+.holiday-type-label.gh {
+    background-color: #FF6B6B;
+}
+
+.holiday-type-label.rh {
+    background-color: #06D6A0;
+}
+
+.holiday-type-label.cisf-gh {
+    background-color: #4A90E2;
+}
+
+.holiday-type-label.cisf-rh {
+    background-color: #50E3C2;
+}
+
+.holiday-more {
+    text-align: center;
+    margin-top: 2px;
+    font-size: 8px;
+    color: #5f6368;
+    font-weight: 600;
+}
+
+.holiday-more-text {
+    background: #f1f3f4;
+    padding: 2px 6px;
+    border-radius: 3px;
+    cursor: help;
+    display: inline-block;
+}
+
+/* कैलेंडर दिन का साइज बढ़ाएं त्योहारों के नाम दिखाने के लिए */
+.calendar-day {
+    min-height: 120px; /* बढ़ाया गया */
+    padding: 10px 6px; /* बढ़ाया गया */
+}
+
+/* त्योहारों को प्राथमिकता देने के लिए (इवेंट्स से ऊपर) */
+.day-holidays {
+    order: 1; /* पहले दिखेगा */
+    margin-top: 2px;
+    margin-bottom: 4px;
+    max-height: 60px;
+    overflow-y: auto;
+}
+
+.day-events {
+    order: 2; /* त्योहारों के बाद दिखेगा */
+    max-height: 40px;
+    overflow-y: auto;
+}
+
+.day-event-more {
+    background-color: #e8f0fe;
+    border-left: 2px solid #1a73e8;
+    padding: 2px 4px;
+    margin-top: 2px;
+    border-radius: 2px;
+    font-size: 8px;
+    color: #1a73e8;
+    font-weight: 600;
+    text-align: center;
+    cursor: help;
+}
+
+/* त्योहार और इवेंट स्क्रॉलबार */
+.day-holidays::-webkit-scrollbar,
+.day-events::-webkit-scrollbar {
+    width: 3px;
+}
+
+.day-holidays::-webkit-scrollbar-track,
+.day-events::-webkit-scrollbar-track {
+    background: #f1f3f4;
+    border-radius: 2px;
+}
+
+.day-holidays::-webkit-scrollbar-thumb,
+.day-events::-webkit-scrollbar-thumb {
+    background: #dadce0;
+    border-radius: 2px;
+}
+
+.day-holidays::-webkit-scrollbar-thumb:hover,
+.day-events::-webkit-scrollbar-thumb:hover {
+    background: #9aa0a6;
+}
+
+/* रेस्पॉन्सिव डिज़ाइन */
+@media (min-width: 768px) {
+    .calendar-day {
+        min-height: 140px;
+        padding: 12px 8px;
+    }
+    
+    .holiday-item-normal, .holiday-item-cisf {
+        font-size: 10px;
+        padding: 4px 8px;
+    }
+    
+    .holiday-name-short {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 767px) {
+    .calendar-day {
+        min-height: 100px;
+    }
+    
+    .holiday-item-normal, .holiday-item-cisf {
+        font-size: 8px;
+        padding: 2px 4px;
+    }
+    
+    .holiday-name-short {
+        max-width: 70px;
+    }
+}
+
+@media (max-width: 480px) {
+    .calendar-day {
+        min-height: 90px;
+        padding: 8px 4px;
+    }
+    
+    .holiday-item-normal, .holiday-item-cisf {
+        font-size: 7px;
+        padding: 1px 3px;
+    }
+    
+    .holiday-name-short {
+        max-width: 50px;
+    }
+    
+    .holiday-dot {
+        width: 6px;
+        height: 6px;
+    }
+}
+
+/* त्योहारों के विभिन्न प्रकारों के लिए रंग */
+.holiday-gh {
+    border-left-color: #FF6B6B !important;
+}
+
+.holiday-rh {
+    border-left-color: #06D6A0 !important;
+}
+
+.holiday-cisf-gh {
+    border-right-color: #4A90E2 !important;
+}
+
+.holiday-cisf-rh {
+    border-right-color: #50E3C2 !important;
+}
+
+/* त्योहार टूलटिप में सुधार */
+.holiday-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    min-width: 220px;
+    display: none;
+    margin-bottom: 8px;
+    font-size: 12px;
+}
+
+.holiday-section {
+    margin-bottom: 12px;
+}
+
+.holiday-section:last-child {
+    margin-bottom: 0;
+}
+
+.holiday-section strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #202124;
+    font-size: 13px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 4px;
+}
+
+.holiday-item-tooltip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+    padding: 4px 0;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.holiday-item-tooltip:last-child {
+    border-bottom: none;
+}
+
+.holiday-type-tooltip {
+    font-size: 10px;
+    font-weight: bold;
+    color: white;
+    padding: 2px 5px;
+    border-radius: 3px;
+    min-width: 25px;
+    text-align: center;
+}
+
+.calendar-day:hover .holiday-tooltip {
+    display: block;
+}
+
+/* त्योहार लेजेंड सुधार */
+.holiday-legend {
+    display: flex;
+    gap: 15px;
+    padding: 10px 16px;
+    background: #f8f9fa;
+    border-top: 1px solid #eee;
+    font-size: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #eee;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+}
+
+.legend-color.gh {
+    background-color: #FF6B6B;
+}
+
+.legend-color.rh {
+    background-color: #06D6A0;
+}
+
+.legend-color.cisf-gh {
+    background-color: #4A90E2;
+}
+
+.legend-color.cisf-rh {
+    background-color: #50E3C2;
 }

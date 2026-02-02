@@ -1,0 +1,704 @@
+{
+  "festivals": {
+    "2024": [
+      {
+        "date": "2024-01-01",
+        "name": "New Year's Day",
+        "type": "GH",
+        "color": "#FF6B6B",
+        "category": "national"
+      },
+      {
+        "date": "2024-01-15",
+        "name": "Makar Sankranti/Pongal",
+        "type": "RH",
+        "color": "#FFD166",
+        "category": "festival"
+      },
+      {
+        "date": "2024-01-26",
+        "name": "Republic Day",
+        "type": "GH",
+        "color": "#FF6B6B",
+        "category": "national"
+      },
+      {
+        "date": "2024-03-08",
+        "name": "Maha Shivaratri",
+        "type": "RH",
+        "color": "#06D6A0",
+        "category": "festival"
+      },
+      {
+        "date": "2024-03-25",
+        "name": "Holi",
+        "type": "RH",
+        "color": "#EF476F",
+        "category": "festival"
+      },
+      {
+        "date": "2024-04-06",
+        "name": "Ugadi/Gudi Padwa",
+        "type": "RH",
+        "color": "#118AB2",
+        "category": "festival"
+      },
+      {
+        "date": "2024-04-09",
+        "name": "Eid al-Fitr",
+        "type": "RH",
+        "color": "#073B4C",
+        "category": "festival"
+      },
+      {
+        "date": "2024-04-17",
+        "name": "Ram Navami",
+        "type": "RH",
+        "color": "#118AB2",
+        "category": "festival"
+      },
+      {
+        "date": "2024-05-01",
+        "name": "Labour Day",
+        "type": "GH",
+        "color": "#FF6B6B",
+        "category": "national"
+      },
+      {
+        "date": "2024-05-23",
+        "name": "Buddha Purnima",
+        "type": "RH",
+        "color": "#06D6A0",
+        "category": "festival"
+      },
+      {
+        "date": "2024-06-17",
+        "name": "Eid al-Adha",
+        "type": "RH",
+        "color": "#073B4C",
+        "category": "festival"
+      },
+      {
+        "date": "2024-07-17",
+        "name": "Muharram",
+        "type": "RH",
+        "color": "#073B4C",
+        "category": "festival"
+      },
+      {
+        "date": "2024-08-15",
+        "name": "Independence Day",
+        "type": "GH",
+        "color": "#FF6B6B",
+        "category": "national"
+      },
+      {
+        "date": "2024-08-26",
+        "name": "Raksha Bandhan",
+        "type": "RH",
+        "color": "#EF476F",
+        "category": "festival"
+      },
+      {
+        "date": "2024-09-06",
+        "name": "Janmashtami",
+        "type": "RH",
+        "color": "#118AB2",
+        "category": "festival"
+      },
+      {
+        "date": "2024-09-16",
+        "name": "Ganesh Chaturthi",
+        "type": "RH",
+        "color": "#06D6A0",
+        "category": "festival"
+      },
+      {
+        "date": "2024-10-02",
+        "name": "Gandhi Jayanti",
+        "type": "GH",
+        "color": "#FF6B6B",
+        "category": "national"
+      },
+      {
+        "date": "2024-10-12",
+        "name": "Dussehra",
+        "type": "RH",
+        "color": "#EF476F",
+        "category": "festival"
+      },
+      {
+        "date": "2024-10-31",
+        "name": "Diwali",
+        "type": "RH",
+        "color": "#FFD166",
+        "category": "festival"
+      },
+      {
+        "date": "2024-11-01",
+        "name": "Govardhan Puja",
+        "type": "RH",
+        "color": "#FFD166",
+        "category": "festival"
+      },
+      {
+        "date": "2024-11-15",
+        "name": "Guru Nanak Jayanti",
+        "type": "RH",
+        "color": "#06D6A0",
+        "category": "festival"
+      },
+      {
+        "date": "2024-12-25",
+        "name": "Christmas",
+        "type": "GH",
+        "color": "#EF476F",
+        "category": "festival"
+      }
+    ],
+    "2025": [
+      {
+        "date": "2025-01-01",
+        "name": "New Year's Day",
+        "type": "GH",
+        "color": "#FF6B6B",
+        "category": "national"
+      },
+      {
+        "date": "2025-01-14",
+        "name": "Makar Sankranti/Pongal",
+        "type": "RH",
+        "color": "#FFD166",
+        "category": "festival"
+      },
+      {
+        "date": "2025-01-26",
+        "name": "Republic Day",
+        "type": "GH",
+        "color": "#FF6B6B",
+        "category": "national"
+      },
+      {
+        "date": "2025-02-26",
+        "name": "Maha Shivaratri",
+        "type": "RH",
+        "color": "#06D6A0",
+        "category": "festival"
+      },
+      {
+        "date": "2025-03-14",
+        "name": "Holi",
+        "type": "RH",
+        "color": "#EF476F",
+        "category": "festival"
+      },
+      {
+        "date": "2025-03-30",
+        "name": "Eid al-Fitr",
+        "type": "RH",
+        "color": "#073B4C",
+        "category": "festival"
+      },
+      {
+        "date": "2025-04-06",
+        "name": "Ugadi/Gudi Padwa",
+        "type": "RH",
+        "color": "#118AB2",
+        "category": "festival"
+      },
+      {
+        "date": "2025-04-14",
+        "name": "Dr. Ambedkar Jayanti",
+        "type": "GH",
+        "color": "#FF6B6B",
+        "category": "national"
+      },
+      {
+        "date": "2025-05-01",
+        "name": "Labour Day",
+        "type": "GH",
+        "color": "#FF6B6B",
+        "category": "national"
+      },
+      {
+        "date": "2025-06-07",
+        "name": "Eid al-Adha",
+        "type": "RH",
+        "color": "#073B4C",
+        "category": "festival"
+      },
+      {
+        "date": "2025-07-07",
+        "name": "Muharram",
+        "type": "RH",
+        "color": "#073B4C",
+        "category": "festival"
+      },
+      {
+        "date": "2025-08-15",
+        "name": "Independence Day",
+        "type": "GH",
+        "color": "#FF6B6B",
+        "category": "national"
+      },
+      {
+        "date": "2025-08-16",
+        "name": "Raksha Bandhan",
+        "type": "RH",
+        "color": "#EF476F",
+        "category": "festival"
+      },
+      {
+        "date": "2025-08-26",
+        "name": "Janmashtami",
+        "type": "RH",
+        "color": "#118AB2",
+        "category": "festival"
+      },
+      {
+        "date": "2025-09-05",
+        "name": "Ganesh Chaturthi",
+        "type": "RH",
+        "color": "#06D6A0",
+        "category": "festival"
+      },
+      {
+        "date": "2025-10-02",
+        "name": "Gandhi Jayanti",
+        "type": "GH",
+        "color": "#FF6B6B",
+        "category": "national"
+      },
+      {
+        "date": "2025-10-02",
+        "name": "Dussehra",
+        "type": "RH",
+        "color": "#EF476F",
+        "category": "festival"
+      },
+      {
+        "date": "2025-10-20",
+        "name": "Diwali",
+        "type": "RH",
+        "color": "#FFD166",
+        "category": "festival"
+      },
+      {
+        "date": "2025-10-21",
+        "name": "Govardhan Puja",
+        "type": "RH",
+        "color": "#FFD166",
+        "category": "festival"
+      },
+      {
+        "date": "2025-11-05",
+        "name": "Guru Nanak Jayanti",
+        "type": "RH",
+        "color": "#06D6A0",
+        "category": "festival"
+      },
+      {
+        "date": "2025-12-25",
+        "name": "Christmas",
+        "type": "GH",
+        "color": "#EF476F",
+        "category": "festival"
+      }
+    ],
+    "2026": [
+      {
+        "date": "2026-01-01",
+        "name": "New Year's Day",
+        "type": "GH",
+        "color": "#FF6B6B",
+        "category": "national"
+      },
+      {
+        "date": "2026-01-14",
+        "name": "Makar Sankranti/Pongal",
+        "type": "RH",
+        "color": "#FFD166",
+        "category": "festival"
+      },
+      {
+        "date": "2026-01-26",
+        "name": "Republic Day",
+        "type": "GH",
+        "color": "#FF6B6B",
+        "category": "national"
+      },
+      {
+        "date": "2026-02-16",
+        "name": "Maha Shivaratri",
+        "type": "RH",
+        "color": "#06D6A0",
+        "category": "festival"
+      },
+      {
+        "date": "2026-03-03",
+        "name": "Holi",
+        "type": "RH",
+        "color": "#EF476F",
+        "category": "festival"
+      },
+      {
+        "date": "2026-03-20",
+        "name": "Eid al-Fitr",
+        "type": "RH",
+        "color": "#073B4C",
+        "category": "festival"
+      },
+      {
+        "date": "2026-03-28",
+        "name": "Ugadi/Gudi Padwa",
+        "type": "RH",
+        "color": "#118AB2",
+        "category": "festival"
+      },
+      {
+        "date": "2026-04-05",
+        "name": "Ram Navami",
+        "type": "RH",
+        "color": "#118AB2",
+        "category": "festival"
+      },
+      {
+        "date": "2026-04-14",
+        "name": "Dr. Ambedkar Jayanti",
+        "type": "GH",
+        "color": "#FF6B6B",
+        "category": "national"
+      },
+      {
+        "date": "2026-05-01",
+        "name": "Labour Day",
+        "type": "GH",
+        "color": "#FF6B6B",
+        "category": "national"
+      },
+      {
+        "date": "2026-05-27",
+        "name": "Buddha Purnima",
+        "type": "RH",
+        "color": "#06D6A0",
+        "category": "festival"
+      },
+      {
+        "date": "2026-06-27",
+        "name": "Eid al-Adha",
+        "type": "RH",
+        "color": "#073B4C",
+        "category": "festival"
+      },
+      {
+        "date": "2026-07-27",
+        "name": "Muharram",
+        "type": "RH",
+        "color": "#073B4C",
+        "category": "festival"
+      },
+      {
+        "date": "2026-08-15",
+        "name": "Independence Day",
+        "type": "GH",
+        "color": "#FF6B6B",
+        "category": "national"
+      },
+      {
+        "date": "2026-08-14",
+        "name": "Raksha Bandhan",
+        "type": "RH",
+        "color": "#EF476F",
+        "category": "festival"
+      },
+      {
+        "date": "2026-08-15",
+        "name": "Janmashtami",
+        "type": "RH",
+        "color": "#118AB2",
+        "category": "festival"
+      },
+      {
+        "date": "2026-09-24",
+        "name": "Ganesh Chaturthi",
+        "type": "RH",
+        "color": "#06D6A0",
+        "category": "festival"
+      },
+      {
+        "date": "2026-10-02",
+        "name": "Gandhi Jayanti",
+        "type": "GH",
+        "color": "#FF6B6B",
+        "category": "national"
+      },
+      {
+        "date": "2026-10-02",
+        "name": "Dussehra",
+        "type": "RH",
+        "color": "#EF476F",
+        "category": "festival"
+      },
+      {
+        "date": "2026-10-19",
+        "name": "Diwali",
+        "type": "RH",
+        "color": "#FFD166",
+        "category": "festival"
+      },
+      {
+        "date": "2026-10-20",
+        "name": "Govardhan Puja",
+        "type": "RH",
+        "color": "#FFD166",
+        "category": "festival"
+      },
+      {
+        "date": "2026-11-24",
+        "name": "Guru Nanak Jayanti",
+        "type": "RH",
+        "color": "#06D6A0",
+        "category": "festival"
+      },
+      {
+        "date": "2026-12-25",
+        "name": "Christmas",
+        "type": "GH",
+        "color": "#EF476F",
+        "category": "festival"
+      }
+    ]
+  },
+  "cisfHolidays": {
+    "2024": [
+      {
+        "date": "2024-01-01",
+        "name": "New Year's Day",
+        "type": "GH",
+        "color": "#4A90E2",
+        "category": "cisf"
+      },
+      {
+        "date": "2024-01-26",
+        "name": "Republic Day",
+        "type": "GH",
+        "color": "#4A90E2",
+        "category": "cisf"
+      },
+      {
+        "date": "2024-03-25",
+        "name": "Holi",
+        "type": "RH",
+        "color": "#50E3C2",
+        "category": "cisf"
+      },
+      {
+        "date": "2024-04-09",
+        "name": "Eid al-Fitr",
+        "type": "RH",
+        "color": "#50E3C2",
+        "category": "cisf"
+      },
+      {
+        "date": "2024-05-01",
+        "name": "Labour Day",
+        "type": "GH",
+        "color": "#4A90E2",
+        "category": "cisf"
+      },
+      {
+        "date": "2024-06-17",
+        "name": "Eid al-Adha",
+        "type": "RH",
+        "color": "#50E3C2",
+        "category": "cisf"
+      },
+      {
+        "date": "2024-08-15",
+        "name": "Independence Day",
+        "type": "GH",
+        "color": "#4A90E2",
+        "category": "cisf"
+      },
+      {
+        "date": "2024-10-02",
+        "name": "Gandhi Jayanti",
+        "type": "GH",
+        "color": "#4A90E2",
+        "category": "cisf"
+      },
+      {
+        "date": "2024-10-31",
+        "name": "Diwali",
+        "type": "RH",
+        "color": "#50E3C2",
+        "category": "cisf"
+      },
+      {
+        "date": "2024-12-25",
+        "name": "Christmas",
+        "type": "GH",
+        "color": "#4A90E2",
+        "category": "cisf"
+      }
+    ],
+    "2025": [
+      {
+        "date": "2025-01-01",
+        "name": "New Year's Day",
+        "type": "GH",
+        "color": "#4A90E2",
+        "category": "cisf"
+      },
+      {
+        "date": "2025-01-26",
+        "name": "Republic Day",
+        "type": "GH",
+        "color": "#4A90E2",
+        "category": "cisf"
+      },
+      {
+        "date": "2025-03-14",
+        "name": "Holi",
+        "type": "RH",
+        "color": "#50E3C2",
+        "category": "cisf"
+      },
+      {
+        "date": "2025-03-30",
+        "name": "Eid al-Fitr",
+        "type": "RH",
+        "color": "#50E3C2",
+        "category": "cisf"
+      },
+      {
+        "date": "2025-04-14",
+        "name": "Dr. Ambedkar Jayanti",
+        "type": "GH",
+        "color": "#4A90E2",
+        "category": "cisf"
+      },
+      {
+        "date": "2025-05-01",
+        "name": "Labour Day",
+        "type": "GH",
+        "color": "#4A90E2",
+        "category": "cisf"
+      },
+      {
+        "date": "2025-06-07",
+        "name": "Eid al-Adha",
+        "type": "RH",
+        "color": "#50E3C2",
+        "category": "cisf"
+      },
+      {
+        "date": "2025-08-15",
+        "name": "Independence Day",
+        "type": "GH",
+        "color": "#4A90E2",
+        "category": "cisf"
+      },
+      {
+        "date": "2025-10-02",
+        "name": "Gandhi Jayanti",
+        "type": "GH",
+        "color": "#4A90E2",
+        "category": "cisf"
+      },
+      {
+        "date": "2025-10-20",
+        "name": "Diwali",
+        "type": "RH",
+        "color": "#50E3C2",
+        "category": "cisf"
+      },
+      {
+        "date": "2025-12-25",
+        "name": "Christmas",
+        "type": "GH",
+        "color": "#4A90E2",
+        "category": "cisf"
+      }
+    ],
+    "2026": [
+      {
+        "date": "2026-01-01",
+        "name": "New Year's Day",
+        "type": "GH",
+        "color": "#4A90E2",
+        "category": "cisf"
+      },
+      {
+        "date": "2026-01-26",
+        "name": "Republic Day",
+        "type": "GH",
+        "color": "#4A90E2",
+        "category": "cisf"
+      },
+      {
+        "date": "2026-03-03",
+        "name": "Holi",
+        "type": "RH",
+        "color": "#50E3C2",
+        "category": "cisf"
+      },
+      {
+        "date": "2026-03-20",
+        "name": "Eid al-Fitr",
+        "type": "RH",
+        "color": "#50E3C2",
+        "category": "cisf"
+      },
+      {
+        "date": "2026-04-14",
+        "name": "Dr. Ambedkar Jayanti",
+        "type": "GH",
+        "color": "#4A90E2",
+        "category": "cisf"
+      },
+      {
+        "date": "2026-05-01",
+        "name": "Labour Day",
+        "type": "GH",
+        "color": "#4A90E2",
+        "category": "cisf"
+      },
+      {
+        "date": "2026-06-27",
+        "name": "Eid al-Adha",
+        "type": "RH",
+        "color": "#50E3C2",
+        "category": "cisf"
+      },
+      {
+        "date": "2026-08-15",
+        "name": "Independence Day",
+        "type": "GH",
+        "color": "#4A90E2",
+        "category": "cisf"
+      },
+      {
+        "date": "2026-10-02",
+        "name": "Gandhi Jayanti",
+        "type": "GH",
+        "color": "#4A90E2",
+        "category": "cisf"
+      },
+      {
+        "date": "2026-10-19",
+        "name": "Diwali",
+        "type": "RH",
+        "color": "#50E3C2",
+        "category": "cisf"
+      },
+      {
+        "date": "2026-12-25",
+        "name": "Christmas",
+        "type": "GH",
+        "color": "#4A90E2",
+        "category": "cisf"
+      }
+    ]
+  }
+}

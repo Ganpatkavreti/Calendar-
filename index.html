@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Calendar</title>
+    <title>My Calendar - भारतीय त्योहारों के साथ</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -73,6 +73,16 @@
 
         <!-- कैलेंडर व्यू -->
         <section class="calendar-view" id="calendar-view">
+            <!-- त्योहार फिल्टर बटन -->
+            <div class="holiday-filter" id="holiday-filter">
+                <button class="filter-btn active" id="toggle-festivals">
+                    <i class="fas fa-flag"></i> National Holidays
+                </button>
+                <button class="filter-btn active" id="toggle-cisf">
+                    <i class="fas fa-shield-alt"></i> CISF GH/RH
+                </button>
+            </div>
+
             <!-- कैलेंडर हेडर (दिनों के नाम) -->
             <div class="calendar-header">
                 <div class="day-header">Sun</div>
@@ -87,6 +97,26 @@
             <!-- कैलेंडर दिन -->
             <div class="calendar-grid" id="calendar-grid">
                 <!-- दिन JavaScript द्वारा जेनरेट किए जाएंगे -->
+            </div>
+
+            <!-- त्योहार लेजेंड -->
+            <div class="holiday-legend">
+                <div class="legend-item">
+                    <div class="legend-color gh"></div>
+                    <span>GH (Gazetted Holiday)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color rh"></div>
+                    <span>RH (Restricted Holiday)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color cisf-gh"></div>
+                    <span>CISF GH</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color cisf-rh"></div>
+                    <span>CISF RH</span>
+                </div>
             </div>
         </section>
 
@@ -199,7 +229,7 @@
     <div class="modal" id="add-task-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-plus-circle"></i> Add Routine Tasks</h3>
+                <h3><i class="fas fa-plus-circle"></i> Add/Edit Routine Tasks</h3>
                 <button class="close-modal" id="close-add-task-modal">&times;</button>
             </div>
             <div class="modal-body">
@@ -209,16 +239,7 @@
                 
                 <!-- मल्टीपल टास्क्स के लिए डायनेमिक फॉर्म -->
                 <div class="tasks-input-container" id="tasks-input-container">
-                    <div class="task-input-group" data-task-index="1">
-                        <div class="form-group">
-                            <label for="add-task-title-1">Routine Task 1</label>
-                            <input type="text" id="add-task-title-1" class="task-title-input" placeholder="Enter routine task title">
-                        </div>
-                        <div class="form-group">
-                            <label for="add-task-notes-1">Notes (Optional)</label>
-                            <textarea id="add-task-notes-1" class="task-notes-input" placeholder="Add any notes..." rows="2"></textarea>
-                        </div>
-                    </div>
+                    <!-- टास्क फील्ड्स यहाँ जेनरेट होंगे -->
                 </div>
                 
                 <!-- अधिक टास्क्स जोड़ने का बटन -->
@@ -229,8 +250,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-cancel" id="cancel-task">Close</button>
-
+                <button class="btn-cancel" id="cancel-add-task">Cancel</button>
                 <button class="btn-save" id="save-all-tasks">
                     <i class="fas fa-save"></i> Save All Routine Tasks
                 </button>
@@ -307,6 +327,8 @@
     </div>
 
     <!-- JavaScript फाइलें -->
+    <script src="holidays.json"></script>
+    <script src="holidays.js"></script>
     <script src="calendar.js"></script>
     <script src="events.js"></script>
     <script src="tasks.js"></script>

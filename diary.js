@@ -1,4 +1,4 @@
-// diary.js - अपडेटेड डायरी फीचर (एक दिन एक कार्ड)
+// diary.js - अपडेटेड डायरी फीचर
 
 class DiaryManager {
     constructor() {

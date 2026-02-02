@@ -1,4 +1,4 @@
-// calendar.js - सुधारित (टास्क मोडल के बटन्स के लिए)
+// calendar.js - सुधारित (त्योहारों के नाम दिखाने के साथ)
 
 class Calendar {
     constructor() {
@@ -10,8 +10,31 @@ class Calendar {
         this.routineTasks = JSON.parse(localStorage.getItem('routineTasks') || '[]');
         this.taskCompletions = JSON.parse(localStorage.getItem('taskCompletions') || '[]');
         
+        // त्योहार फिल्टर
+        this.showFestivals = true;
+        this.showCISF = true;
+        
         // डायरी सेव बटन के लिए लिसनर यहाँ सेट करें
         this.initTaskModalListeners();
+        this.initHolidayFilters();
+    }
+
+    // त्योहार फिल्टर लिसनर्स
+    initHolidayFilters() {
+        // त्योहार फिल्टर बटन
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('toggle-festivals').addEventListener('click', () => {
+                this.showFestivals = !this.showFestivals;
+                document.getElementById('toggle-festivals').classList.toggle('active');
+                this.updateCalendar();
+            });
+            
+            document.getElementById('toggle-cisf').addEventListener('click', () => {
+                this.showCISF = !this.showCISF;
+                document.getElementById('toggle-cisf').classList.toggle('active');
+                this.updateCalendar();
+            });
+        });
     }
 
     // टास्क मोडल लिसनर्स इनिशियलाइज़ करें
@@ -89,7 +112,7 @@ class Calendar {
         }
     }
 
-    // दिन का एलिमेंट बनाएं
+    // दिन का एलिमेंट बनाएं (त्योहारों के नाम के साथ)
     createDayElement(date, className) {
         const dayElement = document.createElement('div');
         dayElement.className = `calendar-day ${className}`;
@@ -106,25 +129,127 @@ class Calendar {
 
         dayElement.appendChild(dayNumber);
 
+        // इस दिन के त्योहार दिखाएं (नाम के साथ)
+        this.addHolidaysToDay(dayElement, date);
+
         // इस दिन के इवेंट्स दिखाएं
         const events = this.getEventsForDate(date);
         if (events.length > 0) {
             const eventsContainer = document.createElement('div');
             eventsContainer.className = 'day-events';
             
-            events.forEach(event => {
+            // अधिकतम 2 इवेंट्स दिखाएं (त्योहारों के लिए जगह बचाने के लिए)
+            const maxEvents = Math.min(events.length, 2);
+            for (let i = 0; i < maxEvents; i++) {
+                const event = events[i];
                 const eventElement = document.createElement('div');
                 eventElement.className = 'day-event';
                 eventElement.textContent = event.title;
                 eventElement.title = `${event.title}${event.time ? ` at ${event.time}` : ''}`;
                 eventsContainer.appendChild(eventElement);
-            });
+            }
+            
+            // अगर 2 से अधिक इवेंट्स हैं तो "+ more" दिखाएं
+            if (events.length > 2) {
+                const moreElement = document.createElement('div');
+                moreElement.className = 'day-event-more';
+                moreElement.textContent = `+${events.length - 2} more`;
+                moreElement.title = `${events.length - 2} more events`;
+                eventsContainer.appendChild(moreElement);
+            }
             
             dayElement.appendChild(eventsContainer);
             dayElement.classList.add('has-event');
         }
 
         return dayElement;
+    }
+
+    // दिन में त्योहार जोड़ें (नाम के साथ)
+    addHolidaysToDay(dayElement, date) {
+        if (!window.holidaysManager || !this.showFestivals && !this.showCISF) return;
+        
+        const holidays = holidaysManager.getHolidaysForDate(date);
+        const hasFestival = holidays.festivals.length > 0;
+        const hasCISF = holidays.cisfHolidays.length > 0;
+        
+        if ((hasFestival && this.showFestivals) || (hasCISF && this.showCISF)) {
+            const holidayContainer = document.createElement('div');
+            holidayContainer.className = 'day-holidays';
+            
+            // सभी त्योहारों को एक साथ दिखाएं
+            let allHolidays = [];
+            
+            // सामान्य त्योहार जोड़ें
+            if (hasFestival && this.showFestivals) {
+                allHolidays = allHolidays.concat(holidays.festivals.map(h => ({...h, isCisf: false})));
+                dayElement.classList.add('has-holiday');
+            }
+            
+            // CISF के GH/RH जोड़ें
+            if (hasCISF && this.showCISF) {
+                allHolidays = allHolidays.concat(holidays.cisfHolidays.map(h => ({...h, isCisf: true})));
+                dayElement.classList.add('has-cisf-holiday');
+            }
+            
+            // अधिकतम 3 त्योहार दिखाएं (नाम के साथ)
+            const maxHolidays = Math.min(allHolidays.length, 3);
+            
+            for (let i = 0; i < maxHolidays; i++) {
+                const holiday = allHolidays[i];
+                const holidayItem = this.createHolidayDisplay(holiday);
+                holidayContainer.appendChild(holidayItem);
+            }
+            
+            // अगर 3 से अधिक त्योहार हैं तो "+ more" दिखाएं
+            if (allHolidays.length > 3) {
+                const moreItem = document.createElement('div');
+                moreItem.className = 'holiday-more';
+                moreItem.innerHTML = `<span class="holiday-more-text">+${allHolidays.length - 3} more</span>`;
+                holidayContainer.appendChild(moreItem);
+            }
+            
+            // त्योहार टूलटिप जोड़ें (सभी त्योहारों की पूरी जानकारी के लिए)
+            const tooltip = document.createElement('div');
+            tooltip.innerHTML = holidaysManager.createHolidayTooltip(holidays);
+            dayElement.appendChild(tooltip.firstChild);
+            
+            if (holidayContainer.children.length > 0) {
+                dayElement.appendChild(holidayContainer);
+            }
+        }
+    }
+
+    // त्योहार दिखाने के लिए नया फंक्शन (नाम के साथ)
+    createHolidayDisplay(holidayData) {
+        const holiday = holidayData;
+        const typeInfo = holidaysManager.getHolidayTypeColor(holiday);
+        
+        // त्योहार का संक्षिप्त नाम (पहले 2 शब्द)
+        const nameWords = holiday.name.split(' ');
+        let shortName = holiday.name;
+        if (nameWords.length > 2) {
+            shortName = nameWords.slice(0, 2).join(' ') + '...';
+        }
+        
+        const holidayItem = document.createElement('div');
+        holidayItem.className = holidayData.isCisf ? 'holiday-item-cisf' : 'holiday-item-normal';
+        
+        // त्योहार के प्रकार के आधार पर बैकग्राउंड कलर
+        const bgColor = holidayData.isCisf ? 
+            (holiday.type === 'GH' ? 'rgba(74, 144, 226, 0.1)' : 'rgba(80, 227, 194, 0.1)') :
+            (holiday.type === 'GH' ? 'rgba(255, 107, 107, 0.1)' : 'rgba(6, 214, 160, 0.1)');
+        
+        holidayItem.style.backgroundColor = bgColor;
+        holidayItem.style.borderLeft = holidayData.isCisf ? 'none' : `3px solid ${typeInfo.color}`;
+        holidayItem.style.borderRight = holidayData.isCisf ? `3px solid ${typeInfo.color}` : 'none';
+        
+        holidayItem.innerHTML = `
+            <span class="holiday-dot" style="background-color: ${typeInfo.color}"></span>
+            <span class="holiday-name-short" title="${holiday.name} (${typeInfo.label})">${shortName}</span>
+        `;
+        
+        return holidayItem;
     }
 
     // तारीख क्लिक करने पर
@@ -405,7 +530,7 @@ class Calendar {
 
     // रूटीन टास्क्स सेव करें (मल्टीपल)
     saveRoutineTasks(taskList) {
-        // पहले से मौजूद टास्क्स के आईडी सेव करें
+        // पुराने टास्क्स के आईडी सेव करें
         const existingIds = this.routineTasks.map(task => task.id);
         
         // नए टास्क्स फिल्टर करें (जिनके आईडी नहीं हैं या नए हैं)
@@ -413,15 +538,19 @@ class Calendar {
             return !existingIds.includes(task.id);
         });
         
-        // नए टास्क्स एड करें
-        newTasks.forEach(task => {
-            this.routineTasks.push(task);
+        // एक्सिस्टिंग टास्क्स अपडेट करें
+        const updatedTasks = taskList.filter(task => {
+            return existingIds.includes(task.id);
         });
+        
+        // सभी टास्क्स अपडेट करें
+        this.routineTasks = taskList;
         
         localStorage.setItem('routineTasks', JSON.stringify(this.routineTasks));
         
-        if (newTasks.length > 0) {
-            this.showNotification(`${newTasks.length} routine tasks saved successfully!`, 'success');
+        const totalTasks = taskList.length;
+        if (totalTasks > 0) {
+            this.showNotification(`${totalTasks} routine tasks saved successfully!`, 'success');
             
             // GitHub बैकअप करें
             if (githubSync && githubSync.autoSync) {
@@ -429,7 +558,7 @@ class Calendar {
             }
         }
         
-        return newTasks.length;
+        return totalTasks;
     }
 
     // रूटीन टास्क डिलीट करें
@@ -517,6 +646,37 @@ class Calendar {
                 });
             }
         });
+        
+        // त्योहारों में सर्च
+        if (holidaysManager && holidaysManager.holidays) {
+            const currentYear = this.currentDate.getFullYear().toString();
+            if (holidaysManager.holidays[currentYear]) {
+                holidaysManager.holidays[currentYear].forEach(holiday => {
+                    if (holiday.name.toLowerCase().includes(searchLower)) {
+                        results.push({
+                            type: 'holiday',
+                            title: holiday.name,
+                            date: holiday.date,
+                            data: holiday
+                        });
+                    }
+                });
+            }
+            
+            // CISF त्योहारों में सर्च
+            if (holidaysManager.cisfHolidays[currentYear]) {
+                holidaysManager.cisfHolidays[currentYear].forEach(holiday => {
+                    if (holiday.name.toLowerCase().includes(searchLower)) {
+                        results.push({
+                            type: 'holiday',
+                            title: holiday.name + ' (CISF)',
+                            date: holiday.date,
+                            data: holiday
+                        });
+                    }
+                });
+            }
+        }
         
         return results;
     }

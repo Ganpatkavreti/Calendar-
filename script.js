@@ -159,8 +159,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 day: 'numeric' 
             });
             
-            const icon = result.type === 'event' ? 'fas fa-calendar' : 'fas fa-book';
-            const typeText = result.type === 'event' ? 'Event' : 'Diary Entry';
+            let icon, typeText;
+            if (result.type === 'event') {
+                icon = 'fas fa-calendar';
+                typeText = 'Event';
+            } else if (result.type === 'diary') {
+                icon = 'fas fa-book';
+                typeText = 'Diary Entry';
+            } else if (result.type === 'holiday') {
+                icon = 'fas fa-flag';
+                typeText = 'Holiday';
+            } else {
+                icon = 'fas fa-calendar';
+                typeText = 'Event';
+            }
             
             resultItem.innerHTML = `
                 <div class="search-result-title">
@@ -185,8 +197,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 // तारीख हाइलाइट करें
                 highlightDate(result.date);
                 
-                // टास्क मोडल खोलें
-                calendar.openTaskModal(date);
+                // टास्क मोडल खोलें (अगर त्योहार नहीं है)
+                if (result.type !== 'holiday') {
+                    calendar.openTaskModal(date);
+                }
             });
             
             searchResults.appendChild(resultItem);
