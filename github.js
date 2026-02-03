@@ -89,17 +89,17 @@ class GitHubSync {
         try {
             calendar.showNotification('Testing sync with GitHub...', 'info');
             
-            const data = this.getBackupData();
+            const data = {
+                events: calendar.events,
+                tasks: calendar.tasks,
+                reviews: calendar.reviews,
+                lastSync: new Date().toISOString()
+            };
+            
             const result = await this.syncToGist(data);
             
             if (result.success) {
                 calendar.showNotification('Sync test successful!', 'success');
-                
-                // Gist ID सेव करें
-                if (result.gistId && !this.gistId) {
-                    this.gistId = result.gistId;
-                    localStorage.setItem('gistId', result.gistId);
-                }
             } else {
                 calendar.showNotification(`Sync failed: ${result.error}`, 'error');
             }
@@ -108,25 +108,13 @@ class GitHubSync {
         }
     }
 
-    // बैकअप डेटा तैयार करें
-    getBackupData() {
-        return {
-            events: calendar.events || [],
-            routineTasks: calendar.routineTasks || [],
-            taskCompletions: calendar.taskCompletions || [],
-            diaryEntries: calendar.diaryEntries || [],
-            backupDate: new Date().toISOString(),
-            appVersion: '1.0.0'
-        };
-    }
-
     async syncToGist(data) {
         if (!this.githubToken) {
             return { success: false, error: 'GitHub token not configured' };
         }
         
         const gistData = {
-            description: 'Calendar App Backup - ' + new Date().toLocaleDateString(),
+            description: 'Calendar App Backup',
             files: {
                 'calendar-backup.json': {
                     content: JSON.stringify(data, null, 2)
@@ -148,15 +136,13 @@ class GitHubSync {
                 method: method,
                 headers: {
                     'Authorization': `token ${this.githubToken}`,
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/vnd.github.v3+json'
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(gistData)
             });
             
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(`GitHub API error: ${response.status} - ${errorData.message || 'Unknown error'}`);
+                throw new Error(`GitHub API error: ${response.status}`);
             }
             
             const result = await response.json();
@@ -169,7 +155,6 @@ class GitHubSync {
             
             return { success: true, gistId: result.id };
         } catch (error) {
-            console.error('GitHub sync error:', error);
             return { success: false, error: error.message };
         }
     }
@@ -182,8 +167,7 @@ class GitHubSync {
         try {
             const response = await fetch(`https://api.github.com/gists/${this.gistId}`, {
                 headers: {
-                    'Authorization': `token ${this.githubToken}`,
-                    'Accept': 'application/vnd.github.v3+json'
+                    'Authorization': `token ${this.githubToken}`
                 }
             });
             
@@ -194,22 +178,18 @@ class GitHubSync {
             const result = await response.json();
             const backupData = JSON.parse(result.files['calendar-backup.json'].content);
             
-            // डेटा मर्ज करें (पुराने डेटा को नए से रिप्लेस करें)
+            // डेटा मर्ज करें
             calendar.events = backupData.events || [];
-            calendar.routineTasks = backupData.routineTasks || [];
-            calendar.taskCompletions = backupData.taskCompletions || [];
-            calendar.diaryEntries = backupData.diaryEntries || [];
+            calendar.tasks = backupData.tasks || [];
+            calendar.reviews = backupData.reviews || [];
             
             // लोकल स्टोरेज में सेव करें
             localStorage.setItem('calendarEvents', JSON.stringify(calendar.events));
-            localStorage.setItem('routineTasks', JSON.stringify(calendar.routineTasks));
-            localStorage.setItem('taskCompletions', JSON.stringify(calendar.taskCompletions));
-            localStorage.setItem('diaryEntries', JSON.stringify(calendar.diaryEntries));
+            localStorage.setItem('calendarTasks', JSON.stringify(calendar.tasks));
+            localStorage.setItem('calendarReviews', JSON.stringify(calendar.reviews));
             
             // UI अपडेट करें
             calendar.updateCalendar();
-            if (eventsManager) eventsManager.updateRemindersList();
-            if (diaryManager) diaryManager.updateDiaryView();
             
             return { success: true };
         } catch (error) {
@@ -222,17 +202,18 @@ class GitHubSync {
             return;
         }
         
+        const data = {
+            events: calendar.events,
+            tasks: calendar.tasks,
+            reviews: calendar.reviews,
+            lastSync: new Date().toISOString()
+        };
+        
         try {
-            const data = this.getBackupData();
-            const result = await this.syncToGist(data);
-            
-            if (result.success) {
-                console.log('Auto backup completed successfully');
-            } else {
-                console.error('Auto backup failed:', result.error);
-            }
+            await this.syncToGist(data);
+            console.log('Auto backup completed');
         } catch (error) {
-            console.error('Auto backup error:', error);
+            console.error('Auto backup failed:', error);
         }
     }
 
@@ -252,9 +233,7 @@ class GitHubSync {
         }
         
         // पहला बैकअप तुरंत करें
-        setTimeout(() => {
-            this.autoBackup();
-        }, 2000);
+        this.autoBackup();
         
         // टाइमर सेट करें
         this.syncTimer = setInterval(() => {
