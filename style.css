@@ -1,4 +1,4 @@
-/* style.css - अपडेटेड CSS (त्योहारों और मल्टीपल टास्क्स के साथ) */
+/* style.css - अपडेटेड CSS (नए UI और रिपोर्ट कार्ड के साथ) */
 
 * {
     margin: 0;
@@ -104,8 +104,9 @@ body {
     border-bottom: 1px solid #ddd;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     gap: 12px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     min-height: 64px;
+    position: relative;
 }
 
 .menu-toggle {
@@ -118,6 +119,7 @@ body {
     border-radius: 50%;
     transition: background-color 0.2s;
     flex-shrink: 0;
+    z-index: 10;
 }
 
 .menu-toggle:hover, .menu-toggle:active {
@@ -129,6 +131,7 @@ body {
     align-items: center;
     gap: 8px;
     flex-grow: 1;
+    min-width: 0;
 }
 
 .nav-btn {
@@ -152,8 +155,47 @@ body {
     font-weight: 600;
     color: #3c4043;
     flex-grow: 1;
-    min-width: 120px;
+    min-width: 0;
     text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 8px;
+}
+
+/* नया सर्च आइकन बटन */
+.search-icon-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #5f6368;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+}
+
+.search-icon-btn:hover, .search-icon-btn:active {
+    background-color: #f1f3f4;
+    color: #1a73e8;
+}
+
+/* सर्च बार कंटेनर */
+.search-bar-container {
+    position: absolute;
+    top: 12px;
+    right: 80px;
+    left: 16px;
+    z-index: 100;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .search-bar {
@@ -162,18 +204,20 @@ body {
     background-color: #f1f3f4;
     border-radius: 8px;
     padding: 10px 14px;
-    flex-grow: 1;
-    min-width: 150px;
-    order: 3;
-    width: 100%;
-    margin-top: 8px;
-    position: relative;
+    border: 1px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.search-bar:focus-within {
+    border-color: #1a73e8;
+    background-color: white;
 }
 
 .search-bar i {
     color: #5f6368;
     margin-right: 10px;
     font-size: 16px;
+    flex-shrink: 0;
 }
 
 .search-bar input {
@@ -181,820 +225,31 @@ body {
     background: none;
     outline: none;
     font-size: 16px;
-    width: 100%;
+    flex: 1;
     color: #3c4043;
     font-weight: 500;
+    min-width: 0;
 }
 
-.today-btn {
-    background-color: #1a73e8;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: background-color 0.2s;
-    flex-shrink: 0;
-}
-
-.today-btn:hover, .today-btn:active {
-    background-color: #0d62d9;
-}
-
-/* कैलेंडर व्यू */
-.calendar-view {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0;
-    width: 100%;
-    height: calc(100vh - 120px);
-}
-
-/* त्योहार फिल्टर बटन */
-.holiday-filter {
-    display: flex;
-    gap: 10px;
-    padding: 10px 16px;
-    background: #f8f9fa;
-    border-bottom: 1px solid #eee;
-}
-
-.filter-btn {
-    background: white;
-    border: 1px solid #ddd;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 500;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s;
-}
-
-.filter-btn.active {
-    background: #1a73e8;
-    color: white;
-    border-color: #1a73e8;
-}
-
-.filter-btn:hover {
-    background: #f1f3f4;
-}
-
-.filter-btn.active:hover {
-    background: #0d62d9;
-}
-
-.calendar-header {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    background-color: #fff;
-    border-bottom: 1px solid #ddd;
-    font-weight: 600;
-    color: #5f6368;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
-
-.day-header {
-    padding: 12px 4px;
-    text-align: center;
-    border-right: 1px solid #eee;
-    font-size: 14px;
-}
-
-.day-header:last-child {
-    border-right: none;
-}
-
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-top: none;
-    min-height: calc(100vh - 180px);
-}
-
-.calendar-day {
-    padding: 8px 4px;
-    border-right: 1px solid #eee;
-    border-bottom: 1px solid #eee;
-    min-height: 80px;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.calendar-day:hover {
-    background-color: #f8f9fa;
-}
-
-.calendar-day:nth-child(7n) {
-    border-right: none;
-}
-
-.calendar-day.other-month {
-    background-color: #f8f9fa;
-    color: #9aa0a6;
-}
-
-.calendar-day.today {
-    background-color: #e8f0fe;
-    border: 2px solid #1a73e8;
-    font-weight: 700;
-}
-
-.calendar-day.has-event {
-    background-color: #fff8e1;
-}
-
-/* त्योहारों के स्टाइल */
-.calendar-day.has-holiday {
-    background-color: #fff8f0;
-    border-left: 3px solid #FFD166;
-}
-
-.calendar-day.has-cisf-holiday {
-    background-color: #f0f8ff;
-    border-right: 3px solid #4A90E2;
-}
-
-.day-number {
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 4px;
-    text-align: center;
-    padding: 2px;
-}
-
-/* सिर्फ इवेंट्स दिखाएं - टास्क्स नहीं */
-.day-events {
-    margin-top: 4px;
-}
-
-.day-event {
-    background-color: #e8f0fe;
-    border-left: 3px solid #1a73e8;
-    padding: 3px 6px;
-    margin-bottom: 3px;
-    border-radius: 3px;
-    font-size: 11px;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    font-weight: 500;
-}
-
-/* त्योहार बैज */
-.day-holidays {
-    margin-top: 4px;
-}
-
-.holiday-badge {
-    font-size: 10px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    color: white;
-    margin: 2px 0;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    cursor: help;
-    font-weight: 600;
-}
-
-.holiday-badge-cisf {
-    font-size: 10px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    color: white;
-    margin: 2px 0;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    cursor: help;
-    font-weight: 600;
-    border: 1px dashed white;
-}
-
-.holiday-label {
-    font-weight: bold;
-    font-size: 9px;
-    background: rgba(0,0,0,0.2);
-    padding: 0 3px;
-    border-radius: 2px;
-}
-
-.holiday-name {
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 9px;
-}
-
-/* त्योहार टूलटिप */
-.holiday-tooltip {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 1000;
-    min-width: 200px;
-    display: none;
-    margin-bottom: 5px;
-}
-
-.holiday-section {
-    margin-bottom: 10px;
-}
-
-.holiday-section:last-child {
-    margin-bottom: 0;
-}
-
-.holiday-section strong {
-    display: block;
-    margin-bottom: 5px;
-    color: #202124;
-    font-size: 12px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 3px;
-}
-
-.holiday-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 4px;
-    font-size: 11px;
-    color: #5f6368;
-}
-
-.holiday-type {
-    font-size: 9px;
-    font-weight: bold;
-    color: white;
-    padding: 1px 4px;
-    border-radius: 3px;
-    min-width: 20px;
-    text-align: center;
-}
-
-.calendar-day:hover .holiday-tooltip {
-    display: block;
-}
-
-/* त्योहार लेजेंड */
-.holiday-legend {
-    display: flex;
-    gap: 15px;
-    padding: 10px 16px;
-    background: #f8f9fa;
-    border-top: 1px solid #eee;
-    font-size: 12px;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.legend-color {
-    width: 12px;
-    height: 12px;
-    border-radius: 3px;
-}
-
-.legend-color.gh {
-    background-color: #FF6B6B;
-}
-
-.legend-color.rh {
-    background-color: #06D6A0;
-}
-
-.legend-color.cisf-gh {
-    background-color: #4A90E2;
-}
-
-.legend-color.cisf-rh {
-    background-color: #50E3C2;
-}
-
-/* रिमाइंडर व्यू */
-.reminders-view, .diary-view {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0;
-    width: 100%;
-    height: calc(100vh - 120px);
-    background-color: #fff;
-}
-
-.reminders-header, .diary-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px;
-    background-color: #fff;
-    border-bottom: 1px solid #eee;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-}
-
-.reminders-header h2, .diary-header h2 {
-    font-size: 20px;
-    color: #202124;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.reminders-header h2 i {
-    color: #1a73e8;
-}
-
-.diary-header h2 i {
-    color: #673ab7;
-}
-
-/* रिमाइंडर लिस्ट */
-.reminders-list, .diary-cards {
-    padding: 0 16px;
-}
-
-.reminder-item {
-    display: flex;
-    align-items: center;
-    padding: 16px 0;
-    border-bottom: 1px solid #eee;
-    gap: 12px;
-}
-
-.reminder-item:last-child {
-    border-bottom: none;
-}
-
-.reminder-content {
-    flex: 1;
-}
-
-.reminder-title {
-    font-weight: 600;
-    color: #202124;
-    font-size: 16px;
-    margin-bottom: 4px;
-}
-
-.reminder-date {
-    font-size: 14px;
-    color: #5f6368;
-    font-weight: 500;
-}
-
-/* डायरी कार्ड्स */
-.diary-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-    padding: 20px;
-}
-
-.diary-card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    border: 1px solid #e0e0e0;
-}
-
-.diary-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-}
-
-.diary-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 12px;
-}
-
-.diary-card-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: #1a73e8;
-    margin: 0;
-    flex: 1;
-}
-
-.diary-card-date {
-    font-size: 12px;
-    color: #5f6368;
-    background: #f1f3f4;
-    padding: 4px 8px;
-    border-radius: 4px;
-    white-space: nowrap;
-}
-
-.diary-card-content {
-    color: #5f6368;
-    font-size: 14px;
-    line-height: 1.5;
-    max-height: 100px;
-    overflow: hidden;
-    position: relative;
-}
-
-.diary-card-content::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 20px;
-    background: linear-gradient(to bottom, transparent, white);
-}
-
-.empty-diary {
-    text-align: center;
-    padding: 60px 20px;
-    color: #5f6368;
-    grid-column: 1 / -1;
-}
-
-.empty-diary i {
-    font-size: 64px;
-    color: #dadce0;
-    margin-bottom: 20px;
-}
-
-.empty-diary h3 {
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: #202124;
-}
-
-.empty-diary p {
-    font-size: 16px;
-    margin-bottom: 30px;
-}
-
-/* मोडल्स */
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 2000;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-}
-
-.modal.active {
-    display: flex;
-}
-
-.modal-content {
-    background-color: white;
-    border-radius: 12px;
-    width: 100%;
-    max-width: 500px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-}
-
-.full-diary-modal {
-    max-width: 700px;
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    border-bottom: 1px solid #eee;
-}
-
-.modal-header h3 {
-    font-size: 20px;
-    color: #202124;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 0;
-}
-
-.modal-header h3 i {
-    color: #1a73e8;
-}
-
-.close-modal {
+.close-search {
     background: none;
     border: none;
-    font-size: 24px;
     color: #5f6368;
     cursor: pointer;
     padding: 4px;
+    margin-left: 8px;
     border-radius: 50%;
     transition: background-color 0.2s;
-}
-
-.close-modal:hover, .close-modal:active {
-    background-color: #f1f3f4;
-}
-
-.modal-body {
-    padding: 20px;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-.form-group label {
-    display: block;
-    font-weight: 600;
-    color: #202124;
-    margin-bottom: 8px;
-    font-size: 14px;
-}
-
-.form-group input,
-.form-group textarea,
-.form-group select {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #dadce0;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: border-color 0.2s;
-}
-
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-    outline: none;
-    border-color: #1a73e8;
-}
-
-.form-group textarea {
-    resize: vertical;
-    min-height: 80px;
-    font-family: inherit;
-}
-
-.modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    padding: 20px;
-    border-top: 1px solid #eee;
-}
-
-.btn-cancel {
-    background-color: #f1f3f4;
-    color: #202124;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.btn-cancel:hover, .btn-cancel:active {
-    background-color: #e8eaed;
-}
-
-.btn-save {
-    background-color: #1a73e8;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.btn-save:hover, .btn-save:active {
-    background-color: #0d62d9;
-}
-
-.btn-delete {
-    background-color: #ea4335;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.btn-delete:hover, .btn-delete:active {
-    background-color: #d32f2f;
-}
-
-/* टास्क मोडल स्पेशल स्टाइल्स */
-.tasks-list {
-    max-height: 300px;
-    overflow-y: auto;
-    margin-bottom: 20px;
-}
-
-.task-item {
-    display: flex;
-    align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid #eee;
-    gap: 12px;
-}
-
-.task-check {
     flex-shrink: 0;
-}
-
-.task-check input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
-    border: 2px solid #dadce0;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-    transition: all 0.2s;
-}
-
-.task-check input[type="checkbox"]:checked {
-    background-color: #1a73e8;
-    border-color: #1a73e8;
-    position: relative;
-}
-
-.task-check input[type="checkbox"]:checked::after {
-    content: '✓';
-    position: absolute;
-    color: white;
-    font-size: 12px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.task-check input[type="checkbox"]:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.task-content {
-    flex: 1;
-}
-
-.task-title {
-    font-weight: 500;
-    color: #202124;
-    font-size: 16px;
-}
-
-.task-completed {
-    text-decoration: line-through;
-    color: #5f6368;
-    opacity: 0.7;
-}
-
-/* मल्टीपल टास्क इनपुट स्टाइल */
-.tasks-input-container {
-    max-height: 400px;
-    overflow-y: auto;
-    margin-bottom: 15px;
-    padding-right: 5px;
-}
-
-.task-input-group {
-    background: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    border: 1px solid #e0e0e0;
-    transition: all 0.2s;
-}
-
-.task-input-group:hover {
-    border-color: #1a73e8;
-    background: #f1f8ff;
-}
-
-.task-input-with-delete {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.task-input-with-delete input {
-    flex: 1;
-}
-
-.btn-delete-task {
-    background-color: #ea4335;
-    color: white;
-    border: none;
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.2s;
-    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
 }
 
-.btn-delete-task:hover {
-    background-color: #d32f2f;
-    transform: scale(1.05);
-}
-
-.btn-add-task {
-    background-color: #1a73e8;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: background-color 0.2s;
-    flex-shrink: 0;
-}
-
-.btn-add-task:hover, .btn-add-task:active {
-    background-color: #0d62d9;
-}
-
-.diary-entry-section {
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid #eee;
-}
-
-/* डायरी फुल व्यू */
-.diary-entry-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
-}
-
-.diary-entry-date, .diary-entry-time {
-    font-size: 14px;
-    color: #5f6368;
-    font-weight: 500;
-}
-
-.diary-entry-content {
-    font-size: 16px;
-    line-height: 1.6;
-    color: #202124;
-    white-space: pre-wrap;
-    word-wrap: break-word;
+.close-search:hover {
+    background-color: #e8eaed;
 }
 
 /* सर्च रिजल्ट्स */
@@ -1028,6 +283,9 @@ body {
 .search-result-title {
     font-weight: 600;
     margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .search-result-date {
@@ -1035,29 +293,580 @@ body {
     color: #5f6368;
 }
 
-/* स्टेटस बार */
-.status-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 16px;
-    background-color: #fff;
-    border-top: 1px solid #ddd;
+/* टोडे बटन (छोटा) */
+.today-btn.compact {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
     font-size: 14px;
-    color: #5f6368;
-    height: 56px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+    height: 44px;
+}
+
+.today-btn.compact:hover, .today-btn.compact:active {
+    background-color: #0d62d9;
+}
+
+.today-btn.compact .today-text {
+    display: inline;
+}
+
+/* कैलेंडर व्यू - फुल स्क्रीन */
+.calendar-view {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 64px);
+}
+
+/* त्योहार फिल्टर बटन */
+.holiday-filter {
+    display: flex;
+    gap: 10px;
+    padding: 10px 16px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #eee;
     flex-shrink: 0;
 }
 
-.time-display {
-    font-weight: 600;
-    font-size: 16px;
+.filter-btn {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
 }
 
-.status-icons {
+.filter-btn.active {
+    background: #1a73e8;
+    color: white;
+    border-color: #1a73e8;
+}
+
+.filter-btn:hover {
+    background: #f1f3f4;
+}
+
+.filter-btn.active:hover {
+    background: #0d62d9;
+}
+
+/* कैलेंडर हेडर */
+.calendar-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+    font-weight: 600;
+    color: #5f6368;
+    flex-shrink: 0;
+}
+
+.day-header {
+    padding: 12px 4px;
+    text-align: center;
+    border-right: 1px solid #eee;
+    font-size: 14px;
+}
+
+.day-header:last-child {
+    border-right: none;
+}
+
+/* कैलेंडर ग्रिड - फुल स्क्रीन */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-top: none;
+    flex: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.calendar-day {
+    padding: 10px 6px;
+    border-right: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    min-height: 80px;
     display: flex;
-    gap: 16px;
+    flex-direction: column;
+}
+
+.calendar-day:hover {
+    background-color: #f8f9fa;
+}
+
+.calendar-day:nth-child(7n) {
+    border-right: none;
+}
+
+.calendar-day.other-month {
+    background-color: #f8f9fa;
+    color: #9aa0a6;
+}
+
+.calendar-day.today {
+    background-color: #e8f0fe;
+    border: 2px solid #1a73e8;
+    font-weight: 700;
+}
+
+.calendar-day.has-event {
+    background-color: #fff8e1;
+}
+
+.calendar-day.highlighted {
+    background-color: #e6f4ea;
+    border: 2px solid #34a853;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(52, 168, 83, 0.4); }
+    70% { box-shadow: 0 0 0 6px rgba(52, 168, 83, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(52, 168, 83, 0); }
+}
+
+/* त्योहारों के स्टाइल */
+.calendar-day.has-holiday {
+    background-color: #fff8f0;
+    border-left: 3px solid #FFD166;
+}
+
+.calendar-day.has-cisf-holiday {
+    background-color: #f0f8ff;
+    border-right: 3px solid #4A90E2;
+}
+
+.day-number {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    text-align: center;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+/* सिर्फ इवेंट्स दिखाएं - टास्क्स नहीं */
+.day-events {
+    margin-top: 4px;
+}
+
+.day-event {
+    background-color: #e8f0fe;
+    border-left: 3px solid #1a73e8;
+    padding: 3px 6px;
+    margin-bottom: 3px;
+    border-radius: 3px;
+    font-size: 11px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     font-weight: 500;
+}
+
+/* त्योहार बैज */
+.day-holidays {
+    margin-top: 4px;
+    flex: 1;
+    overflow-y: auto;
+    max-height: 60px;
+}
+
+.holiday-item-normal, .holiday-item-cisf {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 2px 0;
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    cursor: help;
+    transition: all 0.2s;
+}
+
+.holiday-item-normal:hover, .holiday-item-cisf:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.holiday-item-normal {
+    background-color: rgba(255, 107, 107, 0.1);
+    border-left: 3px solid;
+}
+
+.holiday-item-cisf {
+    background-color: rgba(74, 144, 226, 0.1);
+    border-right: 3px solid;
+}
+
+.holiday-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.holiday-name-short {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #202124;
+    font-weight: 600;
+}
+
+.holiday-more {
+    text-align: center;
+    margin-top: 2px;
+    font-size: 8px;
+    color: #5f6368;
+    font-weight: 600;
+}
+
+.holiday-more-text {
+    background: #f1f3f4;
+    padding: 2px 6px;
+    border-radius: 3px;
+    cursor: help;
+    display: inline-block;
+}
+
+.holiday-count-badge {
+    font-size: 8px;
+    background: #1a73e8;
+    color: white;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+/* त्योहार टूलटिप */
+.holiday-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    min-width: 220px;
+    display: none;
+    margin-bottom: 8px;
+    font-size: 12px;
+}
+
+.calendar-day:hover .holiday-tooltip {
+    display: block;
+}
+
+/* त्योहार लेजेंड */
+.holiday-legend {
+    display: flex;
+    gap: 15px;
+    padding: 10px 16px;
+    background: #f8f9fa;
+    border-top: 1px solid #eee;
+    font-size: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #eee;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+}
+
+.legend-color.gh {
+    background-color: #FF6B6B;
+}
+
+.legend-color.rh {
+    background-color: #06D6A0;
+}
+
+.legend-color.cisf-gh {
+    background-color: #4A90E2;
+}
+
+.legend-color.cisf-rh {
+    background-color: #50E3C2;
+}
+
+/* व्यू सेक्शन */
+.reminders-view, .diary-view {
+    flex: 1;
+    overflow-y: auto;
+    height: calc(100vh - 64px);
+    background-color: #fff;
+}
+
+.reminders-header, .diary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.reminders-header h2, .diary-header h2 {
+    font-size: 20px;
+    color: #202124;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.reminders-header h2 i {
+    color: #1a73e8;
+}
+
+.diary-header h2 i {
+    color: #673ab7;
+}
+
+/* रिपोर्ट स्टैट्स */
+.report-stats {
+    display: flex;
+    gap: 15px;
+    font-size: 14px;
+    color: #5f6368;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: #f8f9fa;
+    padding: 6px 12px;
+    border-radius: 6px;
+}
+
+.stat-item .stat-value {
+    font-weight: 600;
+    color: #1a73e8;
+}
+
+/* रिपोर्ट कार्ड्स */
+.diary-cards {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+    overflow-y: auto;
+    height: calc(100% - 80px);
+}
+
+.report-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid #e0e0e0;
+    position: relative;
+}
+
+.report-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.report-card.excellent {
+    border-left: 4px solid #34a853;
+}
+
+.report-card.good {
+    border-left: 4px solid #fbbc04;
+}
+
+.report-card.average {
+    border-left: 4px solid #ff9800;
+}
+
+.report-card.poor {
+    border-left: 4px solid #ea4335;
+}
+
+.report-card.empty {
+    border-left: 4px solid #9aa0a6;
+}
+
+.report-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.report-card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a73e8;
+    margin: 0;
+    flex: 1;
+}
+
+.report-card-date {
+    font-size: 12px;
+    color: #5f6368;
+    background: #f1f3f4;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.report-card-content {
+    color: #5f6368;
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.report-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+    font-size: 12px;
+}
+
+.task-status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 11px;
+}
+
+.task-status-badge.excellent {
+    background-color: #e6f4ea;
+    color: #34a853;
+}
+
+.task-status-badge.good {
+    background-color: #fef7e0;
+    color: #fbbc04;
+}
+
+.task-status-badge.average {
+    background-color: #ffeccc;
+    color: #ff9800;
+}
+
+.task-status-badge.poor {
+    background-color: #fce8e6;
+    color: #ea4335;
+}
+
+.task-status-badge.empty {
+    background-color: #f1f3f4;
+    color: #9aa0a6;
+}
+
+.completion-rate {
+    font-weight: 600;
+    color: #5f6368;
+}
+
+.report-card-marks {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 20px;
+}
+
+.report-card-marks.excellent::after {
+    content: "✅";
+}
+
+.report-card-marks.good::after {
+    content: "⚠️";
+}
+
+.report-card-marks.poor::after {
+    content: "❌";
+}
+
+.report-card-marks.empty::after {
+    content: "⏸️";
+}
+
+/* खाली स्टेट */
+.empty-diary, .empty-reminders {
+    text-align: center;
+    padding: 60px 20px;
+    color: #5f6368;
+    grid-column: 1 / -1;
+}
+
+.empty-diary i, .empty-reminders i {
+    font-size: 64px;
+    color: #dadce0;
+    margin-bottom: 20px;
+}
+
+.empty-diary h3, .empty-reminders h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #202124;
+}
+
+.empty-diary p, .empty-reminders p {
+    font-size: 16px;
+    margin-bottom: 30px;
 }
 
 /* ओवरले */
@@ -1074,6 +883,237 @@ body {
 
 .overlay.active {
     display: block;
+}
+
+/* मोडल्स */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* बाकी सभी मोडल स्टाइल पहले जैसे ही रहेंगे */
+/* नीचे पुराने स्टाइल्स... */
+
+/* रिमाइंडर लिस्ट */
+.reminders-list {
+    padding: 0 16px;
+}
+
+.reminder-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid #eee;
+    gap: 12px;
+}
+
+.reminder-item:last-child {
+    border-bottom: none;
+}
+
+.reminder-content {
+    flex: 1;
+}
+
+.reminder-title {
+    font-weight: 600;
+    color: #202124;
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.reminder-date {
+    font-size: 14px;
+    color: #5f6368;
+    font-weight: 500;
+}
+
+/* फॉर्म ग्रुप */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: #202124;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #1a73e8;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-header h3 {
+    font-size: 20px;
+    color: #202124;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #5f6368;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.close-modal:hover {
+    background-color: #f1f3f4;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px;
+    border-top: 1px solid #eee;
+}
+
+.btn-cancel {
+    background-color: #f1f3f4;
+    color: #202124;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-cancel:hover {
+    background-color: #e8eaed;
+}
+
+.btn-save {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-save:hover {
+    background-color: #0d62d9;
+}
+
+.btn-delete {
+    background-color: #ea4335;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-delete:hover {
+    background-color: #d32f2f;
+}
+
+/* टास्क मोडल स्टाइल्स */
+.tasks-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+}
+
+.task-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+    gap: 12px;
+}
+
+.task-check input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 2px solid #dadce0;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: all 0.2s;
+}
+
+.task-check input[type="checkbox"]:checked {
+    background-color: #1a73e8;
+    border-color: #1a73e8;
+    position: relative;
+}
+
+.task-check input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    color: white;
+    font-size: 12px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 /* नोटिफिकेशन */
@@ -1113,271 +1153,48 @@ body {
     }
 }
 
-/* नए स्टाइल्स - मल्टीपल टास्क्स के लिए */
-.tasks-input-container {
-    max-height: 400px;
-    overflow-y: auto;
-    margin-bottom: 15px;
-    padding-right: 5px;
+/* त्योहार/इवेंट मोडल स्टाइल्स */
+.holiday-event-modal {
+    max-width: 600px;
 }
 
-.btn-add-more {
-    background-color: #34a853;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: background-color 0.2s;
-    width: 100%;
-    justify-content: center;
-}
-
-.btn-add-more:hover, .btn-add-more:active {
-    background-color: #2d9448;
-}
-
-.add-more-tasks {
-    margin-bottom: 20px;
-}
-
-.form-help {
-    font-size: 12px;
-    color: #5f6368;
-    margin-top: 4px;
-    display: block;
-    font-style: italic;
-}
-
-/* रूटीन इन्फो */
-.routine-info {
-    background-color: #e8f0fe;
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    border-left: 4px solid #1a73e8;
-}
-
-.routine-info p {
-    margin: 0;
-    color: #1a73e8;
-    font-size: 14px;
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-}
-
-.routine-info i {
-    margin-top: 2px;
-}
-
-/* टास्क कार्ड्स के लिए */
-.task-card {
-    border-left: 4px solid #1a73e8;
-}
-
-.task-card .diary-card-title i {
-    color: #1a73e8;
-}
-
-.diary-card-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid #eee;
-    font-size: 12px;
-}
-
-.entry-type {
-    background-color: #f1f3f4;
-    padding: 2px 8px;
-    border-radius: 4px;
-    color: #5f6368;
-}
-
-.task-status {
-    background-color: #e8f0fe;
-    color: #1a73e8;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-weight: 600;
-}
-
-/* खाली टास्क्स मैसेज */
-.empty-tasks {
-    text-align: center;
-    padding: 40px 20px;
-    color: #5f6368;
-}
-
-.empty-tasks i {
-    font-size: 48px;
-    color: #dadce0;
-    margin-bottom: 15px;
-}
-
-.empty-tasks p {
-    font-size: 16px;
-    margin-bottom: 8px;
-    color: #202124;
-}
-
-.empty-tasks small {
-    font-size: 14px;
-    color: #9aa0a6;
-}
-/* सेटिंग्स मोडल के लिए */
-.backup-info {
-    background-color: #f8f9fa;
-    padding: 12px;
-    border-radius: 8px;
-    margin-top: 20px;
-    border-left: 4px solid #34a853;
-}
-
-.backup-info p {
-    margin: 0;
-    color: #5f6368;
-    font-size: 14px;
-}
-
-.backup-info i {
-    color: #34a853;
-    margin-right: 8px;
-}
-
-.btn-test {
-    background-color: #fbbc04;
-    color: #202124;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.btn-test:hover, .btn-test:active {
-    background-color: #e6ac00;
-}
-
-/* डायरी फुल व्यू में लिस्ट स्टाइल */
-#diary-full-content ul {
-    list-style-type: none;
-    padding-left: 0;
-}
-
-#diary-full-content li {
-    padding: 8px 0;
+.holiday-event-section {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
     border-bottom: 1px solid #eee;
 }
 
-#diary-full-content li:last-child {
-    border-bottom: none;
+.holiday-event-section h4 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #202124;
+    margin-bottom: 15px;
+    font-size: 18px;
 }
 
-#diary-full-content h4 {
-    margin-top: 20px;
-    margin-bottom: 10px;
-    color: #1a73e8;
+.holiday-event-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-#diary-full-content small {
-    color: #5f6368;
-    font-size: 12px;
-    margin-left: 10px;
+.holiday-event-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 15px;
+    border-radius: 8px;
+    background: #f8f9fa;
+    border-left: 4px solid;
+    transition: all 0.2s;
 }
 
-/* टास्क नोट्स */
-.task-notes {
-    font-size: 12px;
-    color: #5f6368;
-    margin-top: 4px;
-    font-style: italic;
-    border-left: 2px solid #dadce0;
-    padding-left: 8px;
-}
-
-/* नए टास्क एड मोडल */
-#add-task-modal .modal-content {
-    max-width: 550px;
-}
-
-/* रेस्पॉन्सिव डिज़ाइन */
-@media (min-width: 768px) {
+/* मोबाइल रिस्पॉन्सिव */
+@media (max-width: 768px) {
     .sidebar {
-        width: 300px;
+        width: 280px;
     }
     
-    .top-nav {
-        padding: 12px 24px;
-        gap: 20px;
-        flex-wrap: nowrap;
-    }
-    
-    .search-bar {
-        order: 0;
-        width: 300px;
-        margin-top: 0;
-    }
-    
-    .current-month {
-        font-size: 22px;
-    }
-    
-    .calendar-day {
-        min-height: 100px;
-        padding: 12px 8px;
-    }
-    
-    .day-number {
-        font-size: 16px;
-    }
-    
-    .day-event {
-        font-size: 12px;
-        padding: 4px 8px;
-    }
-    
-    .reminders-list, .diary-cards {
-        padding: 0 24px;
-    }
-    
-    .diary-cards {
-        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-        gap: 24px;
-        padding: 24px;
-    }
-    
-    .diary-card {
-        padding: 24px;
-    }
-    
-    #add-task-modal .modal-content {
-        max-width: 600px;
-    }
-}
-
-@media (max-width: 767px) {
-    .diary-cards {
-        grid-template-columns: 1fr;
-    }
-    
-    .task-input-group {
-        flex-direction: column;
-        gap: 15px;
-    }
-}
-
-@media (max-width: 480px) {
     .top-nav {
         padding: 10px 12px;
         gap: 8px;
@@ -1387,197 +1204,23 @@ body {
         font-size: 16px;
     }
     
+    .search-bar-container {
+        right: 70px;
+        left: 12px;
+    }
+    
+    .today-btn.compact .today-text {
+        display: none;
+    }
+    
+    .today-btn.compact {
+        padding: 8px;
+        width: 44px;
+    }
+    
     .calendar-day {
         min-height: 70px;
-    }
-    
-    .day-event {
-        font-size: 10px;
-        padding: 2px 4px;
-    }
-    
-    .diary-card {
-        padding: 16px;
-    }
-    
-    .diary-card-title {
-        font-size: 16px;
-    }
-    
-    .modal-content {
-        max-width: 95%;
-    }
-}
-/* त्योहारों के नए स्टाइल (नाम दिखाने के लिए) */
-.holiday-item-normal, .holiday-item-cisf {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    margin: 2px 0;
-    padding: 3px 6px;
-    border-radius: 4px;
-    font-size: 9px;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
-    cursor: help;
-    transition: all 0.2s;
-}
-
-.holiday-item-normal:hover, .holiday-item-cisf:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.holiday-item-normal {
-    background-color: rgba(255, 107, 107, 0.1);
-    border-left: 3px solid;
-}
-
-.holiday-item-cisf {
-    background-color: rgba(74, 144, 226, 0.1);
-    border-right: 3px solid;
-}
-
-.holiday-dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    margin-right: 4px;
-}
-
-.holiday-name-short {
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    color: #202124;
-    font-weight: 600;
-}
-
-/* त्योहारों के लिए GH/RH लेबल */
-.holiday-type-label {
-    font-size: 7px;
-    font-weight: bold;
-    padding: 1px 3px;
-    border-radius: 2px;
-    margin-left: 4px;
-    color: white;
-}
-
-.holiday-type-label.gh {
-    background-color: #FF6B6B;
-}
-
-.holiday-type-label.rh {
-    background-color: #06D6A0;
-}
-
-.holiday-type-label.cisf-gh {
-    background-color: #4A90E2;
-}
-
-.holiday-type-label.cisf-rh {
-    background-color: #50E3C2;
-}
-
-.holiday-more {
-    text-align: center;
-    margin-top: 2px;
-    font-size: 8px;
-    color: #5f6368;
-    font-weight: 600;
-}
-
-.holiday-more-text {
-    background: #f1f3f4;
-    padding: 2px 6px;
-    border-radius: 3px;
-    cursor: help;
-    display: inline-block;
-}
-
-/* कैलेंडर दिन का साइज बढ़ाएं त्योहारों के नाम दिखाने के लिए */
-.calendar-day {
-    min-height: 120px; /* बढ़ाया गया */
-    padding: 10px 6px; /* बढ़ाया गया */
-}
-
-/* त्योहारों को प्राथमिकता देने के लिए (इवेंट्स से ऊपर) */
-.day-holidays {
-    order: 1; /* पहले दिखेगा */
-    margin-top: 2px;
-    margin-bottom: 4px;
-    max-height: 60px;
-    overflow-y: auto;
-}
-
-.day-events {
-    order: 2; /* त्योहारों के बाद दिखेगा */
-    max-height: 40px;
-    overflow-y: auto;
-}
-
-.day-event-more {
-    background-color: #e8f0fe;
-    border-left: 2px solid #1a73e8;
-    padding: 2px 4px;
-    margin-top: 2px;
-    border-radius: 2px;
-    font-size: 8px;
-    color: #1a73e8;
-    font-weight: 600;
-    text-align: center;
-    cursor: help;
-}
-
-/* त्योहार और इवेंट स्क्रॉलबार */
-.day-holidays::-webkit-scrollbar,
-.day-events::-webkit-scrollbar {
-    width: 3px;
-}
-
-.day-holidays::-webkit-scrollbar-track,
-.day-events::-webkit-scrollbar-track {
-    background: #f1f3f4;
-    border-radius: 2px;
-}
-
-.day-holidays::-webkit-scrollbar-thumb,
-.day-events::-webkit-scrollbar-thumb {
-    background: #dadce0;
-    border-radius: 2px;
-}
-
-.day-holidays::-webkit-scrollbar-thumb:hover,
-.day-events::-webkit-scrollbar-thumb:hover {
-    background: #9aa0a6;
-}
-
-/* रेस्पॉन्सिव डिज़ाइन */
-@media (min-width: 768px) {
-    .calendar-day {
-        min-height: 140px;
-        padding: 12px 8px;
-    }
-    
-    .holiday-item-normal, .holiday-item-cisf {
-        font-size: 10px;
-        padding: 4px 8px;
-    }
-    
-    .holiday-name-short {
-        font-size: 10px;
-    }
-}
-
-@media (max-width: 767px) {
-    .calendar-day {
-        min-height: 100px;
+        padding: 8px 4px;
     }
     
     .holiday-item-normal, .holiday-item-cisf {
@@ -1586,14 +1229,27 @@ body {
     }
     
     .holiday-name-short {
-        max-width: 70px;
+        max-width: 60px;
+    }
+    
+    .diary-cards {
+        grid-template-columns: 1fr;
+        padding: 16px;
+    }
+    
+    .modal-content {
+        max-width: 95%;
+        margin: 10px;
     }
 }
 
 @media (max-width: 480px) {
     .calendar-day {
-        min-height: 90px;
-        padding: 8px 4px;
+        min-height: 60px;
+    }
+    
+    .day-number {
+        font-size: 12px;
     }
     
     .holiday-item-normal, .holiday-item-cisf {
@@ -1601,14 +1257,61 @@ body {
         padding: 1px 3px;
     }
     
-    .holiday-name-short {
-        max-width: 50px;
-    }
-    
     .holiday-dot {
         width: 6px;
         height: 6px;
     }
+    
+    .holiday-legend {
+        gap: 8px;
+        padding: 8px 12px;
+        font-size: 10px;
+    }
+    
+    .legend-item {
+        padding: 3px 6px;
+    }
+    
+    .search-icon-btn {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .today-btn.compact {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* डेस्कटॉप सुधार */
+@media (min-width: 769px) {
+    .calendar-day {
+        min-height: 100px;
+    }
+    
+    .holiday-item-normal, .holiday-item-cisf {
+        font-size: 10px;
+        padding: 4px 8px;
+    }
+    
+    .holiday-name-short {
+        max-width: 100px;
+    }
+    
+    .today-btn.compact .today-text {
+        display: inline;
+    }
+}
+
+/* होरिजॉन्टल स्क्रॉल के लिए */
+.calendar-grid {
+    scroll-behavior: smooth;
+}
+
+/* कैलेंडर ग्रिड स्क्रॉलबार छिपाएं */
+.calendar-grid::-webkit-scrollbar {
+    width: 0;
+    height: 0;
 }
 
 /* त्योहारों के विभिन्न प्रकारों के लिए रंग */
@@ -1628,437 +1331,208 @@ body {
     border-right-color: #50E3C2 !important;
 }
 
-/* त्योहार टूलटिप में सुधार */
-.holiday-tooltip {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 1000;
-    min-width: 220px;
-    display: none;
-    margin-bottom: 8px;
-    font-size: 12px;
+
+/* =============================== */
+/* नए स्टाइल्स (GitHub सिंक और रिपोर्ट कार्ड के लिए) */
+/* =============================== */
+
+/* सेटिंग्स मोडल के नए स्टाइल */
+
+/* बैकअप एक्शन बटन */
+.backup-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    margin-bottom: 10px;
 }
 
-.holiday-section {
-    margin-bottom: 12px;
-}
-
-.holiday-section:last-child {
-    margin-bottom: 0;
-}
-
-.holiday-section strong {
-    display: block;
-    margin-bottom: 6px;
+.btn-export, .btn-import {
+    background-color: #fbbc04;
     color: #202124;
-    font-size: 13px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 4px;
-}
-
-.holiday-item-tooltip {
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 5px;
-    padding: 4px 0;
-    border-bottom: 1px solid #f5f5f5;
-}
-
-.holiday-item-tooltip:last-child {
-    border-bottom: none;
-}
-
-.holiday-type-tooltip {
-    font-size: 10px;
-    font-weight: bold;
-    color: white;
-    padding: 2px 5px;
-    border-radius: 3px;
-    min-width: 25px;
-    text-align: center;
-}
-
-.calendar-day:hover .holiday-tooltip {
-    display: block;
-}
-
-/* त्योहार लेजेंड सुधार */
-.holiday-legend {
-    display: flex;
-    gap: 15px;
-    padding: 10px 16px;
-    background: #f8f9fa;
-    border-top: 1px solid #eee;
-    font-size: 12px;
-    flex-wrap: wrap;
+    flex: 1;
     justify-content: center;
 }
 
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 8px;
-    background: white;
-    border-radius: 6px;
-    border: 1px solid #eee;
+.btn-export:hover, .btn-import:hover {
+    background-color: #e6ac00;
 }
 
-.legend-color {
-    width: 12px;
-    height: 12px;
-    border-radius: 3px;
-}
-
-.legend-color.gh {
-    background-color: #FF6B6B;
-}
-
-.legend-color.rh {
-    background-color: #06D6A0;
-}
-
-.legend-color.cisf-gh {
-    background-color: #4A90E2;
-}
-
-.legend-color.cisf-rh {
-    background-color: #50E3C2;
-}
-/* style.css - अपडेटेड CSS (नए फीचर्स के साथ) */
-
-/* पिछला सारा CSS कोड यहाँ रहेगा, सिर्फ नए स्टाइल्स नीचे जोड़ें */
-
-/* त्योहार/इवेंट डिटेल मोडल */
-.holiday-event-modal {
-    max-width: 600px;
-}
-
-.holiday-event-section {
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #eee;
-}
-
-.holiday-event-section:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-}
-
-.holiday-event-section h4 {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #202124;
-    margin-bottom: 15px;
-    font-size: 18px;
-}
-
-.holiday-event-section h4 i {
-    color: #1a73e8;
-}
-
-.holiday-event-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.holiday-event-item {
-    display: flex;
-    align-items: flex-start;
-    padding: 15px;
-    border-radius: 8px;
-    background: #f8f9fa;
-    border-left: 4px solid;
-    transition: all 0.2s;
-}
-
-.holiday-event-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.holiday-event-item.gh {
-    border-left-color: #FF6B6B;
-    background: linear-gradient(135deg, rgba(255, 107, 107, 0.05), rgba(255, 107, 107, 0.1));
-}
-
-.holiday-event-item.rh {
-    border-left-color: #06D6A0;
-    background: linear-gradient(135deg, rgba(6, 214, 160, 0.05), rgba(6, 214, 160, 0.1));
-}
-
-.holiday-event-item.cisf-gh {
-    border-left-color: #4A90E2;
-    background: linear-gradient(135deg, rgba(74, 144, 226, 0.05), rgba(74, 144, 226, 0.1));
-}
-
-.holiday-event-item.cisf-rh {
-    border-left-color: #50E3C2;
-    background: linear-gradient(135deg, rgba(80, 227, 194, 0.05), rgba(80, 227, 194, 0.1));
-}
-
-.holiday-event-item.event {
-    border-left-color: #1a73e8;
-    background: linear-gradient(135deg, rgba(26, 115, 232, 0.05), rgba(26, 115, 232, 0.1));
-}
-
-.holiday-event-icon {
-    font-size: 20px;
-    margin-right: 12px;
-    margin-top: 2px;
-    flex-shrink: 0;
-}
-
-.holiday-event-content {
-    flex: 1;
-}
-
-.holiday-event-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #202124;
-    margin-bottom: 5px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.holiday-event-type {
-    font-size: 10px;
-    font-weight: bold;
-    padding: 2px 6px;
-    border-radius: 4px;
-    color: white;
-}
-
-.holiday-event-type.gh {
-    background-color: #FF6B6B;
-}
-
-.holiday-event-type.rh {
-    background-color: #06D6A0;
-}
-
-.holiday-event-type.cisf {
-    background-color: #4A90E2;
-}
-
-.holiday-event-type.event {
-    background-color: #1a73e8;
-}
-
-.holiday-event-details {
-    font-size: 14px;
-    color: #5f6368;
-    line-height: 1.5;
-}
-
-.holiday-event-time {
-    font-size: 12px;
-    color: #9aa0a6;
-    margin-top: 5px;
-    font-style: italic;
-}
-
-.holiday-event-notes {
-    font-size: 13px;
-    color: #5f6368;
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px dashed #ddd;
-    font-style: italic;
-}
-
-/* खाली स्टेट */
-.empty-state {
-    text-align: center;
-    padding: 40px 20px;
-    color: #5f6368;
-}
-
-.empty-state i {
-    font-size: 64px;
-    color: #dadce0;
-    margin-bottom: 20px;
-}
-
-.empty-state h4 {
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 10px;
-    color: #202124;
-}
-
-.empty-state p {
-    font-size: 16px;
-    margin-bottom: 30px;
-}
-
-.btn-add-event-from-detail {
-    background-color: #1a73e8;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: background-color 0.2s;
-    margin: 0 auto;
-}
-
-.btn-add-event-from-detail:hover {
-    background-color: #0d62d9;
-}
-
-/* नए मोडल फूटर बटन */
-.btn-add-event {
+.btn-export {
     background-color: #34a853;
     color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: background-color 0.2s;
 }
 
-.btn-add-event:hover {
+.btn-export:hover {
     background-color: #2d9448;
 }
 
-/* हैमबर्गर मेनू में नए बटन के लिए स्टाइल */
-#add-event-menu-btn {
-    border-top: 1px solid #eee;
+/* लास्ट बैकअप टाइम */
+#last-backup-time {
+    font-size: 13px;
+    color: #5f6368;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
     margin-top: 10px;
+    border-left: 3px solid #1a73e8;
 }
 
-#add-event-menu-btn i {
-    color: #1a73e8;
+/* बैकअप स्टेटस */
+#backup-status {
+    font-size: 13px;
 }
 
-/* कैलेंडर दिन में सुधार */
-.calendar-day.clickable {
-    cursor: pointer;
-}
-
-.calendar-day.non-clickable {
-    cursor: default;
-}
-
-.calendar-day.non-clickable:hover {
-    background-color: inherit !important;
-}
-
-/* त्योहार इंडिकेटर में सुधार */
-.holiday-indicator-container {
+.backup-status-success {
     display: flex;
-    flex-wrap: wrap;
-    gap: 2px;
-    margin-top: 3px;
+    align-items: center;
+    gap: 8px;
+    color: #34a853;
+    padding: 8px 12px;
+    background: #e6f4ea;
+    border-radius: 6px;
+    border-left: 3px solid #34a853;
 }
 
-.holiday-indicator-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    display: inline-block;
-    margin-right: 2px;
+.backup-status-warning {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fbbc04;
+    padding: 8px 12px;
+    background: #fef7e0;
+    border-radius: 6px;
+    border-left: 3px solid #fbbc04;
 }
 
-.holiday-indicator-dot.gh {
-    background-color: #FF6B6B;
+.backup-status-success i, .backup-status-warning i {
+    font-size: 16px;
 }
 
-.holiday-indicator-dot.rh {
-    background-color: #06D6A0;
+/* बैकअप इन्फो */
+.backup-info {
+    background-color: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 20px;
+    border-left: 4px solid #34a853;
 }
 
-.holiday-indicator-dot.cisf-gh {
-    background-color: #4A90E2;
+.backup-info p {
+    margin: 0;
+    color: #5f6368;
+    font-size: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
 }
 
-.holiday-indicator-dot.cisf-rh {
-    background-color: #50E3C2;
+.backup-info i {
+    color: #34a853;
+    margin-top: 2px;
 }
 
-.holiday-count-badge {
-    font-size: 8px;
-    background: #1a73e8;
-    color: white;
-    padding: 1px 4px;
-    border-radius: 3px;
-    margin-left: 4px;
-    font-weight: bold;
+/* सेटिंग्स फॉर्म सुधार */
+#settings-modal .modal-content {
+    max-width: 550px;
 }
 
-/* इवेंट डिलीट बटन */
-.event-delete-btn {
-    background: none;
-    border: none;
-    color: #ea4335;
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 4px;
-    transition: background-color 0.2s;
-    margin-left: 8px;
+#settings-modal .form-group {
+    margin-bottom: 15px;
 }
 
-.event-delete-btn:hover {
-    background-color: rgba(234, 67, 53, 0.1);
+#settings-modal .form-help {
+    font-size: 12px;
+    color: #5f6368;
+    margin-top: 4px;
+    display: block;
+    font-style: italic;
 }
 
-/* रिस्पॉन्सिव सुधार */
+/* रिस्पॉन्सिव */
 @media (max-width: 768px) {
-    .holiday-event-modal {
+    .backup-actions {
+        flex-direction: column;
+    }
+    
+    .btn-export, .btn-import {
+        width: 100%;
+    }
+    
+    #settings-modal .modal-content {
         max-width: 95%;
-        margin: 10px;
-    }
-    
-    .holiday-event-item {
-        padding: 12px;
-    }
-    
-    .holiday-event-title {
-        font-size: 14px;
-    }
-    
-    .holiday-event-details {
-        font-size: 13px;
     }
 }
 
-@media (max-width: 480px) {
-    .holiday-event-section h4 {
-        font-size: 16px;
-    }
-    
-    .holiday-event-item {
-        padding: 10px;
-    }
-    
-    .empty-state i {
-        font-size: 48px;
-    }
-    
-    .empty-state h4 {
-        font-size: 18px;
-    }
+/* कैलेंडर दिन में रिपोर्ट स्टेटस बैज */
+.report-status-badge {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-left: 4px;
+}
+
+.report-status-badge.excellent {
+    background-color: #34a853;
+}
+
+.report-status-badge.good {
+    background-color: #fbbc04;
+}
+
+.report-status-badge.average {
+    background-color: #ff9800;
+}
+
+.report-status-badge.poor {
+    background-color: #ea4335;
+}
+
+.report-status-badge.empty {
+    background-color: #9aa0a6;
+}
+
+/* कम्प्लीशन बार */
+.day-completion-bar {
+    height: 3px;
+    background: #e0e0e0;
+    border-radius: 2px;
+    margin-top: 2px;
+    overflow: hidden;
+}
+
+.day-completion-fill {
+    height: 100%;
+    border-radius: 2px;
+}
+
+/* रिपोर्ट कार्ड स्टेटस कलर */
+.day-completion-fill.excellent {
+    background-color: #34a853;
+}
+
+.day-completion-fill.good {
+    background-color: #fbbc04;
+}
+
+.day-completion-fill.average {
+    background-color: #ff9800;
+}
+
+.day-completion-fill.poor {
+    background-color: #ea4335;
+}
+
+.day-completion-fill.empty {
+    background-color: #9aa0a6;
 }
