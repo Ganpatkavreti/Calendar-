@@ -1,4 +1,4 @@
-// github.js - अपडेटेड GitHub Gist सिंक (रिपोर्ट कार्ड सपोर्ट के साथ)
+// github.js - अपडेटेड GitHub Gist सिंक (डायरी एंट्रीज़ सहित)
 
 class GitHubSync {
     constructor() {
@@ -195,39 +195,117 @@ class GitHubSync {
         }
     }
 
-    // बैकअप डेटा तैयार करें (रिपोर्ट कार्ड्स के साथ)
+    // 🔧 **मुख्य समाधान यहाँ है** 🔧
+    // बैकअप डेटा तैयार करें (सभी डेटा सहित)
     getBackupData() {
+        // ✅ सुनिश्चित करें कि calendar डायरी एंट्रीज़ लोड हैं
+        if (!calendar.diaryEntries || !Array.isArray(calendar.diaryEntries)) {
+            // अगर नहीं हैं तो localStorage से लोड करें
+            const savedDiaryEntries = localStorage.getItem('diaryEntries');
+            if (savedDiaryEntries) {
+                calendar.diaryEntries = JSON.parse(savedDiaryEntries);
+            } else {
+                calendar.diaryEntries = [];
+            }
+        }
+        
+        // ✅ सुनिश्चित करें कि रिपोर्ट कार्ड डेटा लोड है
+        let dailyReports = {};
+        let taskSnapshots = {};
+        
+        if (window.reportCardManager) {
+            dailyReports = window.reportCardManager.dailyReports || {};
+            taskSnapshots = window.reportCardManager.taskSnapshots || {};
+        } else {
+            // localStorage से लोड करें
+            const savedReports = localStorage.getItem('dailyReports');
+            const savedSnapshots = localStorage.getItem('taskSnapshots');
+            
+            if (savedReports) dailyReports = JSON.parse(savedReports);
+            if (savedSnapshots) taskSnapshots = JSON.parse(savedSnapshots);
+        }
+        
         const backupData = {
-            // मुख्य डेटा
+            // ✅ मुख्य डेटा (सभी शामिल)
             events: calendar.events || [],
             routineTasks: calendar.routineTasks || [],
             taskCompletions: calendar.taskCompletions || [],
-            diaryEntries: calendar.diaryEntries || [],
+            diaryEntries: calendar.diaryEntries || [], // ✅ अब यहाँ शामिल है
             
-            // रिपोर्ट कार्ड डेटा
-            dailyReports: {},
-            taskSnapshots: {},
+            // ✅ रिपोर्ट कार्ड डेटा
+            dailyReports: dailyReports,
+            taskSnapshots: taskSnapshots,
             
-            // हिस्ट्री डेटा
+            // ✅ हिस्ट्री डेटा
             taskHistory: JSON.parse(localStorage.getItem('taskHistory') || '{}'),
             completionHistory: JSON.parse(localStorage.getItem('completionHistory') || '{}'),
             
-            // मेटाडेटा
+            // ✅ डायरी से संबंधित अतिरिक्त डेटा
+            diaryNotes: this.getDiaryNotesStats(calendar.diaryEntries),
+            
+            // ✅ मेटाडेटा
             backupDate: new Date().toISOString(),
-            appVersion: '2.0.0',
-            dataVersion: '1.0',
-            totalReports: 0,
-            totalTasks: calendar.routineTasks.length
+            appVersion: '2.1.0',
+            dataVersion: '1.1',
+            totalEvents: calendar.events.length,
+            totalTasks: calendar.routineTasks.length,
+            totalDiaryEntries: calendar.diaryEntries.length, // ✅ डायरी काउंट
+            totalReports: Object.keys(dailyReports).length,
+            totalCompletions: calendar.taskCompletions.length
         };
         
-        // रिपोर्ट कार्ड डेटा जोड़ें
-        if (window.reportCardManager) {
-            backupData.dailyReports = window.reportCardManager.dailyReports;
-            backupData.taskSnapshots = window.reportCardManager.taskSnapshots;
-            backupData.totalReports = Object.keys(window.reportCardManager.dailyReports).length;
+        return backupData;
+    }
+
+    // डायरी नोट्स स्टेट्स कैलकुलेट करें
+    getDiaryNotesStats(diaryEntries) {
+        if (!diaryEntries || !Array.isArray(diaryEntries)) {
+            return {
+                total: 0,
+                totalCharacters: 0,
+                byMonth: {},
+                lastUpdated: null
+            };
         }
         
-        return backupData;
+        let totalCharacters = 0;
+        const byMonth = {};
+        
+        diaryEntries.forEach(entry => {
+            // कैरेक्टर काउंट
+            if (entry.content) {
+                totalCharacters += entry.content.length;
+            }
+            if (entry.title) {
+                totalCharacters += entry.title.length;
+            }
+            
+            // महीने के हिसाब से ग्रुप करें
+            if (entry.date) {
+                const monthKey = entry.date.substring(0, 7); // YYYY-MM format
+                if (!byMonth[monthKey]) {
+                    byMonth[monthKey] = 0;
+                }
+                byMonth[monthKey]++;
+            }
+        });
+        
+        // आखिरी अपडेट डेट
+        let lastUpdated = null;
+        if (diaryEntries.length > 0) {
+            const sortedEntries = [...diaryEntries].sort((a, b) => {
+                return new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt);
+            });
+            lastUpdated = sortedEntries[0].updatedAt || sortedEntries[0].createdAt;
+        }
+        
+        return {
+            total: diaryEntries.length,
+            totalCharacters: totalCharacters,
+            byMonth: byMonth,
+            lastUpdated: lastUpdated,
+            entriesSample: diaryEntries.slice(0, 3) // सैंपल के लिए पहले 3
+        };
     }
 
     async syncToGist(data) {
@@ -235,8 +313,12 @@ class GitHubSync {
             return { success: false, error: 'GitHub token not configured' };
         }
         
+        // ✅ डायरी एंट्रीज़ लॉग करें (डीबगिंग के लिए)
+        console.log('Syncing diary entries:', data.diaryEntries.length);
+        
         const gistData = {
-            description: `Calendar App Backup - ${new Date().toLocaleDateString()} (${data.totalReports} reports, ${data.totalTasks} tasks)`,
+            description: `Calendar App Backup - ${new Date().toLocaleDateString()} ` +
+                        `(${data.totalDiaryEntries} notes, ${data.totalTasks} tasks, ${data.totalEvents} events)`,
             files: {
                 'calendar-backup.json': {
                     content: JSON.stringify(data, null, 2)
@@ -311,6 +393,9 @@ class GitHubSync {
             const result = await response.json();
             const backupData = JSON.parse(result.files['calendar-backup.json'].content);
             
+            // ✅ डायरी एंट्रीज़ लॉग करें (डीबगिंग के लिए)
+            console.log('Restoring diary entries:', backupData.diaryEntries?.length || 0);
+            
             // डेटा रिस्टोर करें
             this.restoreData(backupData);
             
@@ -322,21 +407,23 @@ class GitHubSync {
         }
     }
 
-    // डेटा रिस्टोर करें
+    // ✅ डेटा रिस्टोर करें (सभी डेटा सहित)
     restoreData(backupData) {
-        // मुख्य डेटा रिस्टोर करें
+        // ✅ मुख्य डेटा रिस्टोर करें
         calendar.events = backupData.events || [];
         calendar.routineTasks = backupData.routineTasks || [];
         calendar.taskCompletions = backupData.taskCompletions || [];
+        
+        // ✅ **यहाँ मुख्य समाधान है** - डायरी एंट्रीज़ रिस्टोर करें
         calendar.diaryEntries = backupData.diaryEntries || [];
         
-        // लोकल स्टोरेज में सेव करें
+        // ✅ लोकल स्टोरेज में सेव करें
         localStorage.setItem('calendarEvents', JSON.stringify(calendar.events));
         localStorage.setItem('routineTasks', JSON.stringify(calendar.routineTasks));
         localStorage.setItem('taskCompletions', JSON.stringify(calendar.taskCompletions));
-        localStorage.setItem('diaryEntries', JSON.stringify(calendar.diaryEntries));
+        localStorage.setItem('diaryEntries', JSON.stringify(calendar.diaryEntries)); // ✅ यहाँ सेव करें
         
-        // हिस्ट्री डेटा रिस्टोर करें
+        // ✅ हिस्ट्री डेटा रिस्टोर करें
         if (backupData.taskHistory) {
             localStorage.setItem('taskHistory', JSON.stringify(backupData.taskHistory));
         }
@@ -345,7 +432,7 @@ class GitHubSync {
             localStorage.setItem('completionHistory', JSON.stringify(backupData.completionHistory));
         }
         
-        // रिपोर्ट कार्ड डेटा रिस्टोर करें
+        // ✅ रिपोर्ट कार्ड डेटा रिस्टोर करें
         if (backupData.dailyReports && window.reportCardManager) {
             window.reportCardManager.dailyReports = backupData.dailyReports;
         }
@@ -354,17 +441,22 @@ class GitHubSync {
             window.reportCardManager.taskSnapshots = backupData.taskSnapshots;
         }
         
-        // रिपोर्ट कार्ड मैनेजर को सेव करने दें
+        // ✅ रिपोर्ट कार्ड मैनेजर को सेव करने दें
         if (window.reportCardManager) {
             window.reportCardManager.saveToLocalStorage();
             window.reportCardManager.updateReportCardView();
         }
         
-        // UI अपडेट करें
+        // ✅ UI अपडेट करें
         calendar.updateCalendar();
         if (eventsManager) eventsManager.updateRemindersList();
         
-        // लास्ट बैकअप टाइम अपडेट करें
+        // ✅ डायरी व्यू अपडेट करें (अगर खुला है)
+        if (window.diaryManager) {
+            window.diaryManager.updateDiaryView();
+        }
+        
+        // ✅ लास्ट बैकअप टाइम अपडेट करें
         this.lastBackupTime = backupData.backupDate || new Date().toISOString();
         localStorage.setItem('lastBackupTime', this.lastBackupTime);
         this.updateLastBackupDisplay();
@@ -394,10 +486,11 @@ class GitHubSync {
                 const result = await response.json();
                 const backupData = JSON.parse(result.files['calendar-backup.json'].content);
                 
-                // सिर्फ डेटा रिस्टोर करें अगर खाली है
+                // ✅ सिर्फ डेटा रिस्टोर करें अगर खाली है
                 if (calendar.events.length === 0 && calendar.routineTasks.length === 0) {
                     this.restoreData(backupData);
-                    console.log('Data restored from backup');
+                    console.log('Data restored from backup including diary entries:', 
+                               backupData.diaryEntries?.length || 0);
                 }
             }
         } catch (error) {
@@ -417,10 +510,17 @@ class GitHubSync {
         
         try {
             const data = this.getBackupData();
+            
+            // ✅ बैकअप से पहले डायरी एंट्रीज़ लॉग करें
+            if (data.diaryEntries && data.diaryEntries.length > 0) {
+                console.log('Auto backup includes diary entries:', data.diaryEntries.length);
+            }
+            
             const result = await this.syncToGist(data);
             
             if (result.success) {
-                console.log('Auto backup completed successfully');
+                console.log('Auto backup completed successfully with', 
+                           data.diaryEntries.length, 'diary entries');
             } else {
                 console.error('Auto backup failed:', result.error);
             }
@@ -483,6 +583,13 @@ class GitHubSync {
             calendar.showNotification('Starting manual backup...', 'info');
             
             const data = this.getBackupData();
+            
+            // ✅ यूजर को इन्फो दें कि डायरी भी सेव हो रहा है
+            const diaryCount = data.diaryEntries.length;
+            if (diaryCount > 0) {
+                calendar.showNotification(`Backing up ${diaryCount} diary notes...`, 'info');
+            }
+            
             const result = await this.syncToGist(data);
             
             if (result.success) {
@@ -511,10 +618,14 @@ class GitHubSync {
             
             if (response.ok) {
                 const result = await response.json();
+                const backupData = JSON.parse(result.files['calendar-backup.json'].content);
+                
                 return {
                     exists: true,
                     lastUpdated: result.updated_at,
-                    size: JSON.stringify(result.files['calendar-backup.json']).length
+                    size: JSON.stringify(result.files['calendar-backup.json']).length,
+                    diaryEntries: backupData.diaryEntries?.length || 0, // ✅ डायरी काउंट शामिल
+                    totalEntries: backupData.totalDiaryEntries || 0
                 };
             }
             
@@ -527,6 +638,11 @@ class GitHubSync {
     // बैकअप डेटा को एक्सपोर्ट करें (फाइल डाउनलोड)
     exportBackupData() {
         const data = this.getBackupData();
+        
+        // ✅ यूजर को इन्फो दें
+        const diaryCount = data.diaryEntries.length;
+        calendar.showNotification(`Exporting ${diaryCount} diary notes...`, 'info');
+        
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         
@@ -538,7 +654,7 @@ class GitHubSync {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         
-        calendar.showNotification('Backup exported successfully!', 'success');
+        calendar.showNotification(`Backup exported with ${diaryCount} notes!`, 'success');
     }
 
     // बैकअप डेटा को इंपोर्ट करें (फाइल अपलोड)
@@ -549,14 +665,19 @@ class GitHubSync {
             try {
                 const backupData = JSON.parse(e.target.result);
                 
-                // डेटा वैलिडेट करें
+                // ✅ डेटा वैलिडेट करें (डायरी एंट्रीज़ भी चेक करें)
                 if (!backupData.events || !backupData.routineTasks) {
                     throw new Error('Invalid backup file format');
                 }
                 
-                if (confirm('This will replace all your current data. Are you sure?')) {
+                // ✅ यूजर को डायरी इन्फो दें
+                const diaryCount = backupData.diaryEntries?.length || 0;
+                
+                if (confirm(`This will import ${backupData.events.length} events, ` +
+                           `${backupData.routineTasks.length} tasks, and ` +
+                           `${diaryCount} diary notes. Are you sure?`)) {
                     this.restoreData(backupData);
-                    calendar.showNotification('Backup imported successfully!', 'success');
+                    calendar.showNotification(`Imported ${diaryCount} diary notes!`, 'success');
                 }
             } catch (error) {
                 calendar.showNotification(`Import failed: ${error.message}`, 'error');
