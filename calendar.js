@@ -1,4 +1,4 @@
-// calendar.js - अपडेटेड (नए तारीख क्लिक व्यवहार के साथ)
+// calendar.js - अपडेटेड (रिपोर्ट कार्ड सिस्टम के साथ)
 
 class Calendar {
     constructor() {
@@ -14,37 +14,56 @@ class Calendar {
         this.showFestivals = true;
         this.showCISF = true;
         
+        // रिपोर्ट कार्ड मैनेजर रेफरेंस
+        this.reportCardManager = null;
+        
         // डायरी सेव बटन के लिए लिसनर यहाँ सेट करें
         this.initTaskModalListeners();
         this.initHolidayFilters();
         this.initHolidayEventModalListeners();
+        
+        // रिपोर्ट कार्ड मैनेजर सेट करें
+        this.setupReportCardManager();
+    }
+
+    // रिपोर्ट कार्ड मैनेजर सेटअप
+    setupReportCardManager() {
+        // DOM लोड होने के बाद रिपोर्ट कार्ड मैनेजर सेट करें
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.reportCardManager) {
+                this.reportCardManager = window.reportCardManager;
+            }
+        });
     }
 
     // त्योहार/इवेंट मोडल लिसनर्स
     initHolidayEventModalListeners() {
         // मोडल क्लोज बटन
-        document.getElementById('close-holiday-event-modal').addEventListener('click', () => {
+        document.getElementById('close-holiday-event-modal')?.addEventListener('click', () => {
             this.closeHolidayEventModal();
         });
         
-        document.getElementById('close-holiday-event-view').addEventListener('click', () => {
+        document.getElementById('close-holiday-event-view')?.addEventListener('click', () => {
             this.closeHolidayEventModal();
         });
         
         // मोडल के बाहर क्लिक करने पर बंद करें
-        document.getElementById('holiday-event-modal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('holiday-event-modal')) {
-                this.closeHolidayEventModal();
-            }
-        });
+        const holidayModal = document.getElementById('holiday-event-modal');
+        if (holidayModal) {
+            holidayModal.addEventListener('click', (e) => {
+                if (e.target === holidayModal) {
+                    this.closeHolidayEventModal();
+                }
+            });
+        }
         
         // मोडल से इवेंट एड बटन
-        document.getElementById('add-event-from-modal').addEventListener('click', () => {
+        document.getElementById('add-event-from-modal')?.addEventListener('click', () => {
             this.closeHolidayEventModal();
             this.openEventModal(this.selectedDate);
         });
         
-        document.getElementById('add-event-from-detail').addEventListener('click', () => {
+        document.getElementById('add-event-from-detail')?.addEventListener('click', () => {
             this.closeHolidayEventModal();
             this.openEventModal(this.selectedDate);
         });
@@ -54,13 +73,13 @@ class Calendar {
     initHolidayFilters() {
         // त्योहार फिल्टर बटन
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('toggle-festivals').addEventListener('click', () => {
+            document.getElementById('toggle-festivals')?.addEventListener('click', () => {
                 this.showFestivals = !this.showFestivals;
                 document.getElementById('toggle-festivals').classList.toggle('active');
                 this.updateCalendar();
             });
             
-            document.getElementById('toggle-cisf').addEventListener('click', () => {
+            document.getElementById('toggle-cisf')?.addEventListener('click', () => {
                 this.showCISF = !this.showCISF;
                 document.getElementById('toggle-cisf').classList.toggle('active');
                 this.updateCalendar();
@@ -71,30 +90,35 @@ class Calendar {
     // टास्क मोडल लिसनर्स इनिशियलाइज़ करें
     initTaskModalListeners() {
         // डायरी एंट्री सेव बटन
-        document.getElementById('save-diary-entry').addEventListener('click', () => {
+        document.getElementById('save-diary-entry')?.addEventListener('click', () => {
             this.saveDiaryEntryFromModal();
         });
         
         // टास्क मोडल क्लोज बटन
-        document.getElementById('cancel-task').addEventListener('click', () => {
+        document.getElementById('cancel-task')?.addEventListener('click', () => {
             this.closeTaskModal();
         });
         
-        document.getElementById('close-task-modal').addEventListener('click', () => {
+        document.getElementById('close-task-modal')?.addEventListener('click', () => {
             this.closeTaskModal();
         });
         
         // मोडल के बाहर क्लिक करने पर बंद करें
-        document.getElementById('task-modal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('task-modal')) {
-                this.closeTaskModal();
-            }
-        });
+        const taskModal = document.getElementById('task-modal');
+        if (taskModal) {
+            taskModal.addEventListener('click', (e) => {
+                if (e.target === taskModal) {
+                    this.closeTaskModal();
+                }
+            });
+        }
     }
 
     // महीने का कैलेंडर जेनरेट करें
     generateCalendar() {
         const calendarGrid = document.getElementById('calendar-grid');
+        if (!calendarGrid) return;
+        
         calendarGrid.innerHTML = '';
 
         const year = this.currentDate.getFullYear();
@@ -143,15 +167,19 @@ class Calendar {
         }
     }
 
-    // दिन का एलिमेंट बनाएं (त्योहारों के नाम के साथ)
+    // दिन का एलिमेंट बनाएं (रिपोर्ट कार्ड स्टेटस के साथ)
     createDayElement(date, className) {
         const dayElement = document.createElement('div');
         
         // तारीख पर क्लिक व्यवहार तय करें
         const hasHoliday = this.hasHolidayOnDate(date);
         const hasEvent = this.hasEventOnDate(date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const selectedDate = new Date(date);
+        selectedDate.setHours(0, 0, 0, 0);
         
-        if (hasHoliday || hasEvent || date <= new Date()) {
+        if (hasHoliday || hasEvent || selectedDate <= today) {
             // त्योहार/इवेंट है या पिछली/आज की तारीख - क्लिक करने योग्य
             dayElement.className = `calendar-day ${className} clickable`;
             dayElement.addEventListener('click', () => {
@@ -168,13 +196,23 @@ class Calendar {
         dayNumber.className = 'day-number';
         dayNumber.textContent = date.getDate();
         
-        // त्योहार काउंट बैज जोड़ें
+        // रिपोर्ट कार्ड स्टेटस बैज जोड़ें
+        const reportStatus = this.getReportCardStatus(date);
+        if (reportStatus) {
+            const statusBadge = document.createElement('span');
+            statusBadge.className = `report-status-badge ${reportStatus}`;
+            statusBadge.title = this.getReportStatusTitle(reportStatus);
+            dayNumber.appendChild(statusBadge);
+        }
+        
+        // त्योहार/इवेंट काउंट बैज जोड़ें
         if (hasHoliday || hasEvent) {
             const holidayCount = this.getHolidayEventCount(date);
             if (holidayCount > 0) {
                 const countBadge = document.createElement('span');
                 countBadge.className = 'holiday-count-badge';
                 countBadge.textContent = holidayCount;
+                countBadge.title = `${holidayCount} events/holidays`;
                 dayNumber.appendChild(countBadge);
             }
         }
@@ -214,7 +252,83 @@ class Calendar {
             dayElement.classList.add('has-event');
         }
 
+        // रिपोर्ट कार्ड कम्प्लीशन रेट दिखाएं
+        this.addReportCompletionToDay(dayElement, date);
+
         return dayElement;
+    }
+
+    // दिन में रिपोर्ट कम्प्लीशन जोड़ें
+    addReportCompletionToDay(dayElement, date) {
+        const dateStr = date.toISOString().split('T')[0];
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const selectedDate = new Date(date);
+        selectedDate.setHours(0, 0, 0, 0);
+        
+        // सिर्फ पिछली तारीखों के लिए कम्प्लीशन दिखाएं
+        if (selectedDate > today) return;
+        
+        const taskStats = this.getTaskCompletionStatsForDate(dateStr);
+        
+        if (taskStats.totalTasks > 0 && taskStats.percentage > 0) {
+            const completionBar = document.createElement('div');
+            completionBar.className = 'day-completion-bar';
+            completionBar.style.cssText = `
+                height: 3px;
+                background: #e0e0e0;
+                border-radius: 2px;
+                margin-top: 2px;
+                overflow: hidden;
+            `;
+            
+            const completionFill = document.createElement('div');
+            completionFill.className = 'day-completion-fill';
+            const fillColor = this.getCompletionColor(taskStats.percentage);
+            completionFill.style.cssText = `
+                height: 100%;
+                background: ${fillColor};
+                width: ${taskStats.percentage}%;
+                border-radius: 2px;
+            `;
+            completionFill.title = `${taskStats.completedTasks}/${taskStats.totalTasks} tasks completed (${taskStats.percentage}%)`;
+            
+            completionBar.appendChild(completionFill);
+            dayElement.appendChild(completionBar);
+        }
+    }
+
+    // रिपोर्ट कार्ड स्टेटस प्राप्त करें
+    getReportCardStatus(date) {
+        if (!this.reportCardManager) return null;
+        
+        const dateStr = date.toISOString().split('T')[0];
+        const report = this.reportCardManager.dailyReports[dateStr];
+        
+        if (report && report.status && report.status !== 'empty') {
+            return report.status;
+        }
+        
+        return null;
+    }
+
+    // रिपोर्ट स्टेटस टाइटल प्राप्त करें
+    getReportStatusTitle(status) {
+        const titles = {
+            'excellent': 'Excellent - All tasks completed',
+            'good': 'Good - Most tasks completed',
+            'average': 'Average - Half tasks completed',
+            'poor': 'Poor - Few tasks completed'
+        };
+        return titles[status] || 'Task completion status';
+    }
+
+    // कम्प्लीशन कलर प्राप्त करें
+    getCompletionColor(percentage) {
+        if (percentage === 100) return '#34a853'; // Green
+        if (percentage >= 80) return '#fbbc04';  // Yellow
+        if (percentage >= 50) return '#ff9800';  // Orange
+        return '#ea4335'; // Red
     }
 
     // तारीख पर त्योहार/इवेंट की संख्या प्राप्त करें
@@ -305,7 +419,7 @@ class Calendar {
         }
     }
 
-    // त्योहार दिखाने के लिए नया फंक्शन (नाम के साथ)
+    // त्योहार दिखाने के लिए फंक्शन (नाम के साथ)
     createHolidayDisplay(holidayData) {
         const holiday = holidayData;
         const typeInfo = holidaysManager.getHolidayTypeColor(holiday);
@@ -337,7 +451,7 @@ class Calendar {
         return holidayItem;
     }
 
-    // तारीख क्लिक करने पर (नया व्यवहार)
+    // तारीख क्लिक करने पर
     handleDateClick(date) {
         this.selectedDate = date;
         const today = new Date();
@@ -356,12 +470,13 @@ class Calendar {
             // पिछली या आज की तारीख - टास्क मोडल दिखाएं
             this.openTaskModal(date);
         }
-        // भविष्य की तारीख और कोई त्योहार/इवेंट नहीं - कोई एक्शन नहीं
     }
 
     // त्योहार/इवेंट डिटेल मोडल खोलें
     openHolidayEventModal(date) {
         const modal = document.getElementById('holiday-event-modal');
+        if (!modal) return;
+        
         const modalDate = document.getElementById('holiday-event-modal-date');
         const holidayList = document.getElementById('holiday-list');
         const eventList = document.getElementById('event-list');
@@ -494,12 +609,15 @@ class Calendar {
 
     // त्योहार/इवेंट मोडल बंद करें
     closeHolidayEventModal() {
-        document.getElementById('holiday-event-modal').classList.remove('active');
+        const modal = document.getElementById('holiday-event-modal');
+        if (modal) modal.classList.remove('active');
     }
 
     // टास्क मोडल खोलें (सिर्फ वर्तमान/पिछली तारीख के लिए)
     openTaskModal(date) {
         const modal = document.getElementById('task-modal');
+        if (!modal) return;
+        
         const modalDate = document.getElementById('task-modal-date');
         const tasksList = document.getElementById('tasks-list');
         
@@ -575,6 +693,11 @@ class Calendar {
             checkbox.addEventListener('change', () => {
                 this.saveTaskCompletion(task.id, dateStr, checkbox.checked);
                 
+                // रिपोर्ट कार्ड अपडेट करें
+                if (this.reportCardManager) {
+                    this.reportCardManager.onTaskCompletionChanged(dateStr);
+                }
+                
                 // GitHub बैकअप करें
                 if (githubSync && githubSync.autoSync) {
                     githubSync.autoBackup();
@@ -611,9 +734,30 @@ class Calendar {
         return taskItem;
     }
 
+    // टास्क कम्प्लीशन स्टेटस प्राप्त करें
+    getTaskCompletionStatsForDate(dateStr) {
+        const routineTasks = this.routineTasks;
+        let completedTasks = 0;
+        
+        routineTasks.forEach(task => {
+            const completion = this.getTaskCompletion(task.id, dateStr);
+            if (completion.completed) completedTasks++;
+        });
+        
+        const percentage = routineTasks.length > 0 ? 
+            Math.round((completedTasks / routineTasks.length) * 100) : 0;
+        
+        return {
+            completedTasks: completedTasks,
+            totalTasks: routineTasks.length,
+            percentage: percentage
+        };
+    }
+
     // टास्क मोडल बंद करें
     closeTaskModal() {
-        document.getElementById('task-modal').classList.remove('active');
+        const modal = document.getElementById('task-modal');
+        if (modal) modal.classList.remove('active');
     }
 
     // डायरी एंट्री सेव करें (मोडल से)
@@ -623,15 +767,15 @@ class Calendar {
         const dateStr = this.selectedDate.toISOString().split('T')[0];
         
         if (!title) {
-            this.showNotification('Please enter diary entry title', 'error');
+            this.showNotification('Please enter notes title', 'error');
             return;
         }
-        
+
         if (!content) {
-            this.showNotification('Please write your experience', 'error');
+            this.showNotification('Please write your notes', 'error');
             return;
         }
-        
+
         const diaryEntry = {
             title: title,
             content: content,
@@ -639,7 +783,7 @@ class Calendar {
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
         };
-        
+
         this.saveDiaryEntry(diaryEntry);
         this.closeTaskModal();
     }
@@ -647,6 +791,8 @@ class Calendar {
     // इवेंट मोडल खोलें (हैमबर्गर मेनू से)
     openEventModal(date = null) {
         const modal = document.getElementById('event-modal');
+        if (!modal) return;
+        
         const dateInput = document.getElementById('event-date-input');
         
         // तारीख सेट करें (अगर दी गई है)
@@ -714,13 +860,16 @@ class Calendar {
 
     // महीने का नाम अपडेट करें
     updateMonthDisplay() {
+        const monthDisplay = document.getElementById('current-month');
+        if (!monthDisplay) return;
+        
         const monthNames = [
             "January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"
         ];
         const monthName = monthNames[this.currentDate.getMonth()];
         const year = this.currentDate.getFullYear();
-        document.getElementById('current-month').textContent = `${monthName} ${year}`;
+        monthDisplay.textContent = `${monthName} ${year}`;
     }
 
     // तारीख के लिए इवेंट्स लोड करें
@@ -782,6 +931,7 @@ class Calendar {
             githubSync.autoBackup();
         }
     }
+
     // रूटीन टास्क्स सेव करें (मल्टीपल)
     saveRoutineTasks(taskList) {
         // पुराने टास्क्स के आईडी सेव करें
@@ -806,6 +956,11 @@ class Calendar {
         if (totalTasks > 0) {
             this.showNotification(`${totalTasks} routine tasks saved successfully!`, 'success');
             
+            // रिपोर्ट कार्ड्स अपडेट करें
+            if (this.reportCardManager) {
+                this.reportCardManager.updateAllReportsOnTaskChange();
+            }
+            
             // GitHub बैकअप करें
             if (githubSync && githubSync.autoSync) {
                 githubSync.autoBackup();
@@ -829,6 +984,11 @@ class Calendar {
         if (this.routineTasks.length < initialLength) {
             this.showNotification('Routine task deleted successfully!', 'success');
             
+            // रिपोर्ट कार्ड्स अपडेट करें
+            if (this.reportCardManager) {
+                this.reportCardManager.updateAllReportsOnTaskChange();
+            }
+            
             // GitHub बैकअप करें
             if (githubSync && githubSync.autoSync) {
                 githubSync.autoBackup();
@@ -840,7 +1000,7 @@ class Calendar {
     saveDiaryEntry(entryData) {
         const existingIndex = this.diaryEntries.findIndex(entry => entry.date === entryData.date);
         if (existingIndex > -1) {
-            // एक्सिस्टिंग एंट्री को अपडेट करें (उसी कार्ड में)
+            // एक्सिस्टिंग एंट्री को अपडेट करें
             this.diaryEntries[existingIndex] = {
                 ...this.diaryEntries[existingIndex],
                 ...entryData,
@@ -855,16 +1015,16 @@ class Calendar {
         }
         
         localStorage.setItem('diaryEntries', JSON.stringify(this.diaryEntries));
-        this.showNotification('Diary entry saved successfully!', 'success');
+        this.showNotification('Notes saved successfully!', 'success');
         
         // GitHub बैकअप करें
         if (githubSync && githubSync.autoSync) {
             githubSync.autoBackup();
         }
         
-        // डायरी व्यू अपडेट करें (अगर डायरी व्यू खुला है)
-        if (diaryManager) {
-            diaryManager.updateDiaryView();
+        // रिपोर्ट कार्ड व्यू अपडेट करें (अगर रिपोर्ट कार्ड व्यू खुला है)
+        if (this.reportCardManager) {
+            this.reportCardManager.updateReportCardView();
         }
     }
 
