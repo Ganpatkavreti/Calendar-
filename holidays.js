@@ -7,50 +7,139 @@ class HolidaysManager {
         this.loadHolidays();
     }
 
-    // JSON फाइल से त्योहार लोड करें
-    async loadHolidays() {
+    // त्योहार लोड करें - JSON फाइल के बजाय सीधे डेटा से
+    loadHolidays() {
         try {
-            const response = await fetch('holidays.json');
-            const data = await response.json();
-            this.holidays = data.festivals;
-            this.cisfHolidays = data.cisfHolidays;
+            // सीधे JSON डेटा लोड करें
+            const holidaysData = {
+                "festivals": {
+                    "2025": [
+                        { "date": "2025-01-14", "name": "Makar Sankranti", "type": "RH", "color": "#FFD166" },
+                        { "date": "2025-01-26", "name": "Republic Day", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2025-03-14", "name": "Maha Shivratri", "type": "RH", "color": "#FFD166" },
+                        { "date": "2025-03-24", "name": "Holi", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2025-04-02", "name": "Good Friday", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2025-04-14", "name": "Ambedkar Jayanti", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2025-04-21", "name": "Ram Navami", "type": "RH", "color": "#FFD166" },
+                        { "date": "2025-05-01", "name": "May Day", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2025-05-23", "name": "Buddha Purnima", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2025-08-15", "name": "Independence Day", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2025-08-19", "name": "Raksha Bandhan", "type": "RH", "color": "#FFD166" },
+                        { "date": "2025-08-26", "name": "Janmashtami", "type": "RH", "color": "#FFD166" },
+                        { "date": "2025-09-05", "name": "Teachers' Day", "type": "RH", "color": "#FFD166" },
+                        { "date": "2025-09-16", "name": "Onam", "type": "RH", "color": "#FFD166" },
+                        { "date": "2025-10-02", "name": "Gandhi Jayanti", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2025-10-20", "name": "Diwali", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2025-10-21", "name": "Govardhan Puja", "type": "RH", "color": "#FFD166" },
+                        { "date": "2025-10-22", "name": "Bhai Dooj", "type": "RH", "color": "#FFD166" },
+                        { "date": "2025-11-10", "name": "Chhath Puja", "type": "RH", "color": "#FFD166" },
+                        { "date": "2025-12-25", "name": "Christmas", "type": "GH", "color": "#FF6B6B" }
+                    ],
+                    "2026": [
+                        { "date": "2026-01-14", "name": "Makar Sankranti", "type": "RH", "color": "#FFD166" },
+                        { "date": "2026-01-26", "name": "Republic Day", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2026-03-03", "name": "Maha Shivratri", "type": "RH", "color": "#FFD166" },
+                        { "date": "2026-03-13", "name": "Holi", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2026-04-10", "name": "Ram Navami", "type": "RH", "color": "#FFD166" },
+                        { "date": "2026-04-14", "name": "Ambedkar Jayanti", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2026-04-18", "name": "Good Friday", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2026-05-01", "name": "May Day", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2026-05-12", "name": "Buddha Purnima", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2026-08-15", "name": "Independence Day", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2026-08-19", "name": "Raksha Bandhan", "type": "RH", "color": "#FFD166" },
+                        { "date": "2026-09-05", "name": "Teachers' Day", "type": "RH", "color": "#FFD166" },
+                        { "date": "2026-09-07", "name": "Janmashtami", "type": "RH", "color": "#FFD166" },
+                        { "date": "2026-09-16", "name": "Onam", "type": "RH", "color": "#FFD166" },
+                        { "date": "2026-10-02", "name": "Gandhi Jayanti", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2026-10-19", "name": "Diwali", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2026-10-20", "name": "Govardhan Puja", "type": "RH", "color": "#FFD166" },
+                        { "date": "2026-10-21", "name": "Bhai Dooj", "type": "RH", "color": "#FFD166" },
+                        { "date": "2026-10-30", "name": "Chhath Puja", "type": "RH", "color": "#FFD166" },
+                        { "date": "2026-12-25", "name": "Christmas", "type": "GH", "color": "#FF6B6B" }
+                    ],
+                    "2027": [
+                        { "date": "2027-01-14", "name": "Makar Sankranti", "type": "RH", "color": "#FFD166" },
+                        { "date": "2027-01-26", "name": "Republic Day", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2027-02-21", "name": "Maha Shivratri", "type": "RH", "color": "#FFD166" },
+                        { "date": "2027-03-02", "name": "Holi", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2027-03-26", "name": "Good Friday", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2027-03-30", "name": "Ram Navami", "type": "RH", "color": "#FFD166" },
+                        { "date": "2027-04-14", "name": "Ambedkar Jayanti", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2027-05-01", "name": "May Day", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2027-05-02", "name": "Buddha Purnima", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2027-06-27", "name": "Id-ul-Fitr", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2027-08-15", "name": "Independence Day", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2027-08-08", "name": "Raksha Bandhan", "type": "RH", "color": "#FFD166" },
+                        { "date": "2027-08-27", "name": "Janmashtami", "type": "RH", "color": "#FFD166" },
+                        { "date": "2027-09-05", "name": "Teachers' Day", "type": "RH", "color": "#FFD166" },
+                        { "date": "2027-09-16", "name": "Onam", "type": "RH", "color": "#FFD166" },
+                        { "date": "2027-10-02", "name": "Gandhi Jayanti", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2027-11-08", "name": "Diwali", "type": "GH", "color": "#FF6B6B" },
+                        { "date": "2027-11-09", "name": "Govardhan Puja", "type": "RH", "color": "#FFD166" },
+                        { "date": "2027-11-10", "name": "Bhai Dooj", "type": "RH", "color": "#FFD166" },
+                        { "date": "2027-11-18", "name": "Chhath Puja", "type": "RH", "color": "#FFD166" },
+                        { "date": "2027-12-25", "name": "Christmas", "type": "GH", "color": "#FF6B6B" }
+                    ]
+                },
+                "cisfHolidays": {
+                    "2025": [
+                        { "date": "2025-01-26", "name": "Republic Day", "type": "GH", "color": "#4A90E2" },
+                        { "date": "2025-05-01", "name": "May Day", "type": "GH", "color": "#4A90E2" },
+                        { "date": "2025-08-15", "name": "Independence Day", "type": "GH", "color": "#4A90E2" },
+                        { "date": "2025-10-02", "name": "Gandhi Jayanti", "type": "GH", "color": "#4A90E2" },
+                        { "date": "2025-12-25", "name": "Christmas", "type": "GH", "color": "#4A90E2" }
+                    ],
+                    "2026": [
+                        { "date": "2026-01-26", "name": "Republic Day", "type": "GH", "color": "#4A90E2" },
+                        { "date": "2026-05-01", "name": "May Day", "type": "GH", "color": "#4A90E2" },
+                        { "date": "2026-08-15", "name": "Independence Day", "type": "GH", "color": "#4A90E2" },
+                        { "date": "2026-10-02", "name": "Gandhi Jayanti", "type": "GH", "color": "#4A90E2" },
+                        { "date": "2026-12-25", "name": "Christmas", "type": "GH", "color": "#4A90E2" }
+                    ],
+                    "2027": [
+                        { "date": "2027-01-26", "name": "Republic Day", "type": "GH", "color": "#4A90E2" },
+                        { "date": "2027-05-01", "name": "May Day", "type": "GH", "color": "#4A90E2" },
+                        { "date": "2027-08-15", "name": "Independence Day", "type": "GH", "color": "#4A90E2" },
+                        { "date": "2027-10-02", "name": "Gandhi Jayanti", "type": "GH", "color": "#4A90E2" },
+                        { "date": "2027-12-25", "name": "Christmas", "type": "GH", "color": "#4A90E2" }
+                    ]
+                }
+            };
+            
+            this.holidays = holidaysData.festivals;
+            this.cisfHolidays = holidaysData.cisfHolidays;
             console.log('Holidays loaded successfully for years:', Object.keys(this.holidays));
         } catch (error) {
             console.error('Error loading holidays:', error);
-            // डिफॉल्ट डेटा (अगर फाइल नहीं मिली)
+            // फिर भी डिफॉल्ट डेटा लोड करें
             this.loadDefaultHolidays();
         }
     }
 
-    // डिफॉल्ट त्योहार डेटा
+    // डिफॉल्ट त्योहार डेटा (बैकअप के रूप में)
     loadDefaultHolidays() {
         this.holidays = {
-            "2024": [
-                { date: "2024-01-26", name: "Republic Day", type: "GH", color: "#FF6B6B" },
-                { date: "2024-08-15", name: "Independence Day", type: "GH", color: "#FF6B6B" },
-                { date: "2024-10-02", name: "Gandhi Jayanti", type: "GH", color: "#FF6B6B" },
-                { date: "2024-10-31", name: "Diwali", type: "RH", color: "#FFD166" }
-            ],
             "2025": [
                 { date: "2025-01-26", name: "Republic Day", type: "GH", color: "#FF6B6B" },
                 { date: "2025-08-15", name: "Independence Day", type: "GH", color: "#FF6B6B" },
                 { date: "2025-10-02", name: "Gandhi Jayanti", type: "GH", color: "#FF6B6B" },
-                { date: "2025-10-20", name: "Diwali", type: "RH", color: "#FFD166" }
+                { date: "2025-10-20", name: "Diwali", type: "GH", color: "#FF6B6B" }
             ],
             "2026": [
                 { date: "2026-01-26", name: "Republic Day", type: "GH", color: "#FF6B6B" },
                 { date: "2026-08-15", name: "Independence Day", type: "GH", color: "#FF6B6B" },
                 { date: "2026-10-02", name: "Gandhi Jayanti", type: "GH", color: "#FF6B6B" },
-                { date: "2026-10-19", name: "Diwali", type: "RH", color: "#FFD166" }
+                { date: "2026-10-19", name: "Diwali", type: "GH", color: "#FF6B6B" }
+            ],
+            "2027": [
+                { date: "2027-01-26", name: "Republic Day", type: "GH", color: "#FF6B6B" },
+                { date: "2027-08-15", name: "Independence Day", type: "GH", color: "#FF6B6B" },
+                { date: "2027-10-02", name: "Gandhi Jayanti", type: "GH", color: "#FF6B6B" },
+                { date: "2027-11-08", name: "Diwali", type: "GH", color: "#FF6B6B" }
             ]
         };
         
         this.cisfHolidays = {
-            "2024": [
-                { date: "2024-01-26", name: "Republic Day", type: "GH", color: "#4A90E2" },
-                { date: "2024-08-15", name: "Independence Day", type: "GH", color: "#4A90E2" },
-                { date: "2024-10-02", name: "Gandhi Jayanti", type: "GH", color: "#4A90E2" }
-            ],
             "2025": [
                 { date: "2025-01-26", name: "Republic Day", type: "GH", color: "#4A90E2" },
                 { date: "2025-08-15", name: "Independence Day", type: "GH", color: "#4A90E2" },
@@ -60,6 +149,11 @@ class HolidaysManager {
                 { date: "2026-01-26", name: "Republic Day", type: "GH", color: "#4A90E2" },
                 { date: "2026-08-15", name: "Independence Day", type: "GH", color: "#4A90E2" },
                 { date: "2026-10-02", name: "Gandhi Jayanti", type: "GH", color: "#4A90E2" }
+            ],
+            "2027": [
+                { date: "2027-01-26", name: "Republic Day", type: "GH", color: "#4A90E2" },
+                { date: "2027-08-15", name: "Independence Day", type: "GH", color: "#4A90E2" },
+                { date: "2027-10-02", name: "Gandhi Jayanti", type: "GH", color: "#4A90E2" }
             ]
         };
     }
