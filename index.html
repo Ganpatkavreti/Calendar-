@@ -22,8 +22,8 @@
                 <span>Reminders</span>
             </div>
             <div class="menu-item view-option" data-view="diary">
-                <i class="fas fa-book"></i>
-                <span>Diary</span>
+                <i class="fas fa-chart-line"></i>
+                <span>Report Card</span>
             </div>
         </div>
         
@@ -64,15 +64,26 @@
                 </button>
             </div>
             
-            <div class="search-bar">
+            <!-- सर्च आइकन बटन (नया) -->
+            <button class="search-icon-btn" id="search-icon-btn">
                 <i class="fas fa-search"></i>
-                <input type="text" id="search-input" placeholder="Search events or holidays...">
+            </button>
+            
+            <!-- सर्च बार (छुपा हुआ) -->
+            <div class="search-bar-container" id="search-bar-container" style="display: none;">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" placeholder="Search events or holidays...">
+                    <button class="close-search" id="close-search">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
                 <div class="search-results" id="search-results"></div>
             </div>
             
-            <button class="today-btn" id="today-btn">
+            <button class="today-btn compact" id="today-btn">
                 <i class="fas fa-calendar-day"></i>
-                Today
+                <span class="today-text">Today</span>
             </button>
         </header>
 
@@ -136,27 +147,19 @@
             </div>
         </section>
 
-        <!-- डायरी व्यू (छिपा हुआ) -->
+        <!-- रिपोर्ट कार्ड व्यू (छिपा हुआ) -->
         <section class="diary-view" id="diary-view" style="display: none;">
             <div class="diary-header">
-                <h2><i class="fas fa-book"></i> My Diary</h2>
+                <h2><i class="fas fa-chart-line"></i> Daily Report Card</h2>
+                <div class="report-stats" id="report-stats">
+                    <!-- रिपोर्ट स्टैट्स यहाँ जेनरेट होंगे -->
+                </div>
             </div>
             
             <div class="diary-cards" id="diary-cards">
-                <!-- डायरी कार्ड्स JavaScript द्वारा जेनरेट किए जाएंगे -->
+                <!-- रिपोर्ट कार्ड्स JavaScript द्वारा जेनरेट किए जाएंगे -->
             </div>
         </section>
-
-        <!-- स्टेटस बार (नीचे) -->
-        <footer class="status-bar">
-            <div class="time-display" id="time-display">
-                17:24
-            </div>
-            <div class="status-icons">
-                <span class="network-status">5G</span>
-                <span class="battery-status">67%</span>
-            </div>
-        </footer>
     </main>
 
     <!-- ओवरले (जब मेनू खुला हो) -->
@@ -256,17 +259,17 @@
                 <!-- डायरी एंट्री सेक्शन (सभी तारीखों के लिए) -->
                 <div class="diary-entry-section" id="diary-entry-section">
                     <div class="form-group">
-                        <label for="diary-title">Diary Entry Title</label>
-                        <input type="text" id="diary-title-input" placeholder="Enter title for your diary entry">
+                        <label for="diary-title">Notes Title</label>
+                        <input type="text" id="diary-title-input" placeholder="Enter title for your notes">
                     </div>
                     <div class="form-group">
-                        <label for="diary-content">Your Daily Experience</label>
+                        <label for="diary-content">Additional Notes</label>
                         <textarea id="diary-content-input" placeholder="Write about your completed tasks, achievements, and thoughts..." rows="6"></textarea>
                     </div>
                     <button class="btn-save" id="save-diary-entry">
-                        <i class="fas fa-save"></i> Save/Update Diary Entry
+                        <i class="fas fa-save"></i> Save/Update Notes
                     </button>
-                    <small class="form-help">This will create or update diary entry for this date</small>
+                    <small class="form-help">This will create or update notes for this date</small>
                 </div>
             </div>
             <div class="modal-footer">
@@ -331,50 +334,92 @@
         </div>
     </div>
 
-    <!-- सेटिंग्स मोडल -->
-    <div class="modal" id="settings-modal">
-        <div class="modal-content">
+    <!-- रिपोर्ट कार्ड फुल व्यू मोडल (नया) -->
+    <div class="modal" id="report-card-modal">
+        <div class="modal-content full-diary-modal">
             <div class="modal-header">
-                <h3><i class="fas fa-cog"></i> Settings</h3>
-                <button class="close-modal" id="close-settings-modal">&times;</button>
+                <h3><i class="fas fa-chart-bar"></i> Daily Report - <span id="report-card-date"></span></h3>
+                <button class="close-modal" id="close-report-card-modal">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label for="github-token-input">GitHub Personal Access Token</label>
-                    <input type="password" id="github-token-input" placeholder="Enter GitHub token">
-                    <small class="form-help">Create token at GitHub → Settings → Developer settings → Personal access tokens</small>
+                <div class="report-card-summary" id="report-card-summary">
+                    <!-- रिपोर्ट सारांश यहाँ लोड होगा -->
                 </div>
-                <div class="form-group">
-                    <label for="gist-id-input">Gist ID (Optional - auto-generated)</label>
-                    <input type="text" id="gist-id-input" placeholder="Will be auto-generated">
+                <div class="report-card-tasks" id="report-card-tasks">
+                    <!-- टास्क्स की लिस्ट यहाँ लोड होगी -->
                 </div>
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="auto-sync-input">
-                        Enable Auto Backup
-                    </label>
-                </div>
-                <div class="form-group">
-                    <label for="backup-frequency-input">Backup Frequency</label>
-                    <select id="backup-frequency-input">
-                        <option value="daily">Daily</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="manual">Manual Only</option>
-                    </select>
-                </div>
-                <div class="backup-info">
-                    <p><i class="fas fa-info-circle"></i> Backup includes: Events, Tasks, and Diary Entries</p>
+                <div class="report-card-notes" id="report-card-notes">
+                    <!-- नोट्स यहाँ लोड होंगे -->
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-cancel" id="cancel-settings">Cancel</button>
-                <button class="btn-test" id="test-sync">
-                    <i class="fas fa-sync"></i> Test Sync
-                </button>
-                <button class="btn-save" id="save-settings">Save Settings</button>
+                <button class="btn-cancel" id="close-report-card-view">Close</button>
             </div>
         </div>
     </div>
+<!-- सेटिंग्स मोडल -->
+<div class="modal" id="settings-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-cog"></i> Settings</h3>
+            <button class="close-modal" id="close-settings-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="github-token-input">GitHub Personal Access Token</label>
+                <input type="password" id="github-token-input" placeholder="Enter GitHub token">
+                <small class="form-help">Create token at GitHub → Settings → Developer settings → Personal access tokens</small>
+            </div>
+            <div class="form-group">
+                <label for="gist-id-input">Gist ID (Optional - auto-generated)</label>
+                <input type="text" id="gist-id-input" placeholder="Will be auto-generated">
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="auto-sync-input">
+                    Enable Auto Backup
+                </label>
+            </div>
+            <div class="form-group">
+                <label for="backup-frequency-input">Backup Frequency</label>
+                <select id="backup-frequency-input">
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="manual">Manual Only</option>
+                </select>
+            </div>
+            
+            <!-- नया: बैकअप एक्शन बटन -->
+            <div class="form-group">
+                <div class="backup-actions">
+                    <button class="btn-export" id="export-backup-btn">
+                        <i class="fas fa-download"></i> Export Backup
+                    </button>
+                    <button class="btn-import" id="import-backup-btn">
+                        <i class="fas fa-upload"></i> Import Backup
+                    </button>
+                </div>
+            </div>
+            
+            <!-- नया: लास्ट बैकअप टाइम और स्टेटस -->
+            <div class="form-group">
+                <div id="last-backup-time"></div>
+                <div id="backup-status" style="margin-top: 10px;"></div>
+            </div>
+            
+            <div class="backup-info">
+                <p><i class="fas fa-info-circle"></i> Backup includes: Events, Tasks, Report Cards, Notes and History</p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" id="cancel-settings">Cancel</button>
+            <button class="btn-test" id="test-sync">
+                <i class="fas fa-sync"></i> Test Sync
+            </button>
+            <button class="btn-save" id="save-settings">Save Settings</button>
+        </div>
+    </div>
+</div>
 
     <!-- JavaScript फाइलें -->
     <script src="holidays.json"></script>
@@ -383,6 +428,7 @@
     <script src="events.js"></script>
     <script src="tasks.js"></script>
     <script src="diary.js"></script>
+    <script src="report-card.js"></script>
     <script src="github.js"></script>
     <script src="script.js"></script>
 </body>
