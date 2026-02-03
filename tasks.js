@@ -1,4 +1,4 @@
-// tasks.js - सुधारित (मल्टीपल टास्क एड और क्लोज बटन ठीक)
+// tasks.js - अपडेटेड (रिपोर्ट कार्ड सिस्टम के साथ)
 
 class TasksManager {
     constructor() {
@@ -50,7 +50,7 @@ class TasksManager {
 
     loadExistingTasks() {
         if (calendar && calendar.routineTasks) {
-            this.existingTasks = calendar.routineTasks;
+            this.existingTasks = [...calendar.routineTasks];
         }
     }
 
@@ -127,9 +127,46 @@ class TasksManager {
 
     deleteRoutineTask(taskId) {
         if (calendar) {
+            // पहले टास्क की जानकारी सेव करें (हिस्ट्री के लिए)
+            this.saveTaskHistoryBeforeDeletion(taskId);
+            
+            // टास्क डिलीट करें
             calendar.deleteRoutineTask(taskId);
+            
+            // रिपोर्ट कार्ड्स अपडेट करें
+            this.updateReportCardsAfterTaskChange();
+            
+            // मोडल रीफ्रेश करें
             this.openAddTaskModal();
         }
+    }
+
+    // टास्क हिस्ट्री सेव करें (डिलीट होने से पहले)
+    saveTaskHistoryBeforeDeletion(taskId) {
+        // टास्क की जानकारी प्राप्त करें
+        const taskToDelete = this.existingTasks.find(task => task.id === taskId);
+        if (!taskToDelete) return;
+        
+        // टास्क हिस्ट्री localStorage में सेव करें
+        const taskHistory = JSON.parse(localStorage.getItem('taskHistory') || '{}');
+        
+        if (!taskHistory[taskId]) {
+            taskHistory[taskId] = {
+                task: taskToDelete,
+                deletedAt: new Date().toISOString(),
+                history: []
+            };
+        }
+        
+        // टास्क कम्प्लीशन हिस्ट्री भी सेव करें
+        if (calendar && calendar.taskCompletions) {
+            const taskCompletions = calendar.taskCompletions.filter(comp => comp.taskId === taskId);
+            if (taskCompletions.length > 0) {
+                taskHistory[taskId].completions = taskCompletions;
+            }
+        }
+        
+        localStorage.setItem('taskHistory', JSON.stringify(taskHistory));
     }
 
     addAnotherTask() {
@@ -184,12 +221,75 @@ class TasksManager {
         }
         
         if (calendar) {
+            // पुराने टास्क्स की जानकारी सेव करें (हिस्ट्री के लिए)
+            this.saveTaskHistoryBeforeUpdate(taskList);
+            
+            // नए टास्क्स सेव करें
             const addedCount = calendar.saveRoutineTasks(taskList);
+            
+            // रिपोर्ट कार्ड्स अपडेट करें
+            this.updateReportCardsAfterTaskChange();
+            
             this.closeAddTaskModal();
             
             if (document.getElementById('task-modal').classList.contains('active')) {
                 calendar.openTaskModal(calendar.selectedDate);
             }
+        }
+    }
+
+    // टास्क अपडेट से पहले हिस्ट्री सेव करें
+    saveTaskHistoryBeforeUpdate(newTaskList) {
+        const oldTasks = [...this.existingTasks];
+        const newTaskIds = newTaskList.map(task => task.id);
+        
+        // डिलीट हुए टास्क्स की हिस्ट्री सेव करें
+        oldTasks.forEach(oldTask => {
+            if (!newTaskIds.includes(oldTask.id)) {
+                // टास्क डिलीट हो गया है
+                this.saveTaskHistoryBeforeDeletion(oldTask.id);
+            } else {
+                // टास्क अपडेट हुआ है - पुरानी वर्जन सेव करें
+                const updatedTask = newTaskList.find(t => t.id === oldTask.id);
+                if (updatedTask && (updatedTask.title !== oldTask.title || updatedTask.notes !== oldTask.notes)) {
+                    this.saveTaskUpdateHistory(oldTask, updatedTask);
+                }
+            }
+        });
+    }
+
+    // टास्क अपडेट हिस्ट्री सेव करें
+    saveTaskUpdateHistory(oldTask, updatedTask) {
+        const taskHistory = JSON.parse(localStorage.getItem('taskHistory') || '{}');
+        
+        if (!taskHistory[oldTask.id]) {
+            taskHistory[oldTask.id] = {
+                task: oldTask,
+                updatedAt: new Date().toISOString(),
+                history: []
+            };
+        }
+        
+        // पुरानी वर्जन हिस्ट्री में एड करें
+        taskHistory[oldTask.id].history.push({
+            oldVersion: oldTask,
+            newVersion: updatedTask,
+            updatedAt: new Date().toISOString()
+        });
+        
+        localStorage.setItem('taskHistory', JSON.stringify(taskHistory));
+    }
+
+    // रिपोर्ट कार्ड्स अपडेट करें (टास्क बदलने पर)
+    updateReportCardsAfterTaskChange() {
+        // रिपोर्ट कार्ड मैनेजर को अपडेट करें
+        if (window.reportCardManager) {
+            window.reportCardManager.updateAllReportsOnTaskChange();
+        }
+        
+        // डायरी मैनेजर को अपडेट करें
+        if (window.diaryManager && window.diaryManager.onRoutineTasksChanged) {
+            window.diaryManager.onRoutineTasksChanged();
         }
     }
 
@@ -203,6 +303,98 @@ class TasksManager {
         if (modal) modal.classList.remove('active');
         
         this.taskCounter = 1;
+    }
+
+    // टास्क कम्प्लीशन बदलने पर अपडेट करें
+    onTaskCompletionChanged(dateStr, taskId, completed) {
+        // रिपोर्ट कार्ड अपडेट करें
+        if (window.reportCardManager) {
+            window.reportCardManager.onTaskCompletionChanged(dateStr);
+        }
+        
+        // डायरी मैनेजर को अपडेट करें
+        if (window.diaryManager && window.diaryManager.onTaskCompletionChanged) {
+            window.diaryManager.onTaskCompletionChanged(dateStr);
+        }
+        
+        // टास्क कम्प्लीशन हिस्ट्री सेव करें
+        this.saveTaskCompletionHistory(dateStr, taskId, completed);
+    }
+
+    // टास्क कम्प्लीशन हिस्ट्री सेव करें
+    saveTaskCompletionHistory(dateStr, taskId, completed) {
+        const task = this.existingTasks.find(t => t.id === taskId);
+        if (!task) return;
+        
+        const completionHistory = JSON.parse(localStorage.getItem('completionHistory') || '{}');
+        const historyKey = `${dateStr}_${taskId}`;
+        
+        if (!completionHistory[historyKey]) {
+            completionHistory[historyKey] = [];
+        }
+        
+        // हिस्ट्री में एड करें
+        completionHistory[historyKey].push({
+            taskId: taskId,
+            taskTitle: task.title,
+            date: dateStr,
+            completed: completed,
+            timestamp: new Date().toISOString()
+        });
+        
+        // सिर्फ आखिरी 10 एंट्रीज रखें
+        if (completionHistory[historyKey].length > 10) {
+            completionHistory[historyKey] = completionHistory[historyKey].slice(-10);
+        }
+        
+        localStorage.setItem('completionHistory', JSON.stringify(completionHistory));
+    }
+
+    // टास्क हिस्ट्री प्राप्त करें
+    getTaskHistory(taskId) {
+        const taskHistory = JSON.parse(localStorage.getItem('taskHistory') || '{}');
+        return taskHistory[taskId] || null;
+    }
+
+    // टास्क कम्प्लीशन हिस्ट्री प्राप्त करें
+    getCompletionHistory(dateStr, taskId) {
+        const completionHistory = JSON.parse(localStorage.getItem('completionHistory') || '{}');
+        const historyKey = `${dateStr}_${taskId}`;
+        return completionHistory[historyKey] || [];
+    }
+
+    // टास्क स्नैपशॉट प्राप्त करें (रिपोर्ट कार्ड के लिए)
+    getTaskSnapshotForDate(dateStr) {
+        const taskHistory = JSON.parse(localStorage.getItem('taskHistory') || '{}');
+        const currentTasks = calendar.getRoutineTasks();
+        
+        // हर टास्क के लिए उस दिन की वर्जन खोजें
+        const snapshot = currentTasks.map(task => {
+            const history = taskHistory[task.id];
+            if (history && history.history) {
+                // उस दिन से पहले की आखिरी वर्जन ढूंढें
+                const date = new Date(dateStr);
+                const previousVersions = history.history.filter(h => 
+                    new Date(h.updatedAt) <= date
+                );
+                
+                if (previousVersions.length > 0) {
+                    const latestVersion = previousVersions[previousVersions.length - 1];
+                    return {
+                        ...latestVersion.oldVersion,
+                        currentId: task.id
+                    };
+                }
+            }
+            
+            // अगर हिस्ट्री नहीं है तो करंट टास्क
+            return {
+                ...task,
+                currentId: task.id
+            };
+        });
+        
+        return snapshot;
     }
 }
 
