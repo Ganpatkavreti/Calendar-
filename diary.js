@@ -1,90 +1,71 @@
-// diary.js - अपडेटेड डायरी फीचर
+// diary.js - अपडेटेड (रिपोर्ट कार्ड सिस्टम के लिए)
 
 class DiaryManager {
     constructor() {
+        // डायरी एंट्रीज को रिपोर्ट कार्ड में बदल दिया गया है
+        // अब यह सिर्फ रिपोर्ट कार्ड फुल व्यू मोडल हैंडल करेगा
         this.initDiaryListeners();
     }
 
     initDiaryListeners() {
-        // डायरी फुल व्यू मोडल लिसनर्स
-        document.getElementById('close-diary-full-view').addEventListener('click', () => this.closeDiaryFullView());
-        document.getElementById('close-diary-full-modal').addEventListener('click', () => this.closeDiaryFullView());
-        document.getElementById('delete-diary-entry').addEventListener('click', () => this.deleteDiaryEntry());
+        // डायरी फुल व्यू मोडल लिसनर्स (रिपोर्ट कार्ड के लिए भी काम करेगा)
+        document.getElementById('close-diary-full-view')?.addEventListener('click', () => this.closeDiaryFullView());
+        document.getElementById('close-diary-full-modal')?.addEventListener('click', () => this.closeDiaryFullView());
+        document.getElementById('delete-diary-entry')?.addEventListener('click', () => this.deleteDiaryEntry());
         
         // मोडल के बाहर क्लिक करने पर बंद करें
-        document.getElementById('diary-full-view-modal').addEventListener('click', (e) => {
-            if (e.target === document.getElementById('diary-full-view-modal')) {
-                this.closeDiaryFullView();
-            }
-        });
-    }
-
-    // डायरी व्यू अपडेट करें (एक दिन एक कार्ड)
-    updateDiaryView() {
-        const diaryCards = document.getElementById('diary-cards');
-        const diaryEntries = calendar.diaryEntries;
-        
-        // तारीख के हिसाब से सॉर्ट करें (नई से पुरानी)
-        const sortedEntries = [...diaryEntries].sort((a, b) => new Date(b.date) - new Date(a.date));
-        
-        if (sortedEntries.length === 0) {
-            diaryCards.innerHTML = `
-                <div class="empty-diary">
-                    <i class="fas fa-book-open"></i>
-                    <h3>No Diary Entries</h3>
-                    <p>You haven't written any diary entries yet.</p>
-                    <p>Click on any past date to write about your experience.</p>
-                </div>
-            `;
-            return;
-        }
-        
-        let html = '';
-        sortedEntries.forEach(entry => {
-            const entryDate = new Date(entry.date);
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const dateStr = entryDate.toLocaleDateString('en-US', options);
-            
-            // इस तारीख के लिए कम्प्लीटेड टास्क्स काउंट करें
-            const dateStrForTasks = entryDate.toISOString().split('T')[0];
-            const routineTasks = calendar.getRoutineTasks();
-            let completedTasks = 0;
-            let totalTasks = routineTasks.length;
-            
-            routineTasks.forEach(task => {
-                const completion = calendar.getTaskCompletion(task.id, dateStrForTasks);
-                if (completion.completed) completedTasks++;
+        const diaryModal = document.getElementById('diary-full-view-modal');
+        if (diaryModal) {
+            diaryModal.addEventListener('click', (e) => {
+                if (e.target === diaryModal) {
+                    this.closeDiaryFullView();
+                }
             });
-            
-            // कंटेंट प्रिव्यू (150 characters)
-            const contentPreview = entry.content.length > 150 
-                ? entry.content.substring(0, 150) + '...' 
-                : entry.content;
-            
-            html += `
-                <div class="diary-card" onclick="diaryManager.openDiaryFullView('${entry.date}')">
-                    <div class="diary-card-header">
-                        <h3 class="diary-card-title">
-                            <i class="fas fa-book"></i> ${this.escapeHtml(entry.title)}
-                        </h3>
-                        <div class="diary-card-date">${dateStr}</div>
-                    </div>
-                    <div class="diary-card-content">
-                        ${this.escapeHtml(contentPreview)}
-                    </div>
-                    <div class="diary-card-footer">
-                        <span class="entry-type">Daily Entry</span>
-                        ${totalTasks > 0 ? `<span class="task-status">${completedTasks}/${totalTasks} tasks completed</span>` : ''}
-                    </div>
-                </div>
-            `;
-        });
-        
-        diaryCards.innerHTML = html;
+        }
     }
 
-    // डायरी एंट्री फुल व्यू खोलें
+    // डायरी व्यू अपडेट करें (अब रिपोर्ट कार्ड का हिस्सा है)
+    updateDiaryView() {
+        // डायरी व्यू अब रिपोर्ट कार्ड मैनेजर द्वारा हैंडल किया जाएगा
+        // यह फंक्शन सिर्फ कम्पेटिबिलिटी के लिए रखा गया है
+        console.log('Diary view is now handled by Report Card Manager');
+        
+        // अगर रिपोर्ट कार्ड मैनेजर है तो उससे अपडेट करवाएं
+        if (window.reportCardManager) {
+            window.reportCardManager.updateReportCardView();
+        } else {
+            this.showEmptyDiaryView();
+        }
+    }
+
+    // खाली डायरी व्यू दिखाएं
+    showEmptyDiaryView() {
+        const diaryCards = document.getElementById('diary-cards');
+        if (!diaryCards) return;
+        
+        diaryCards.innerHTML = `
+            <div class="empty-diary">
+                <i class="fas fa-chart-line"></i>
+                <h3>Report Cards Loading...</h3>
+                <p>Your daily report cards will appear here automatically.</p>
+                <p>Please wait or refresh the page.</p>
+            </div>
+        `;
+    }
+
+    // डायरी एंट्री फुल व्यू खोलें (अब रिपोर्ट कार्ड के लिए)
     openDiaryFullView(dateStr) {
+        // अगर रिपोर्ट कार्ड मैनेजर है तो उसका मोडल खोलें
+        if (window.reportCardManager) {
+            window.reportCardManager.openReportCardModal(dateStr);
+        } else {
+            // पुराना डायरी व्यू (बैकअप के लिए)
+            this.openLegacyDiaryView(dateStr);
+        }
+    }
+
+    // पुराना डायरी व्यू (बैकअप)
+    openLegacyDiaryView(dateStr) {
         const entry = calendar.getDiaryEntryForDate(new Date(dateStr));
         if (!entry) return;
         
@@ -133,14 +114,15 @@ class DiaryManager {
     }
 
     closeDiaryFullView() {
-        document.getElementById('diary-full-view-modal').classList.remove('active');
+        const modal = document.getElementById('diary-full-view-modal');
+        if (modal) modal.classList.remove('active');
     }
 
     deleteDiaryEntry() {
         const modal = document.getElementById('diary-full-view-modal');
         const dateStr = modal.dataset.entryDate;
         
-        if (!dateStr || !confirm('Are you sure you want to delete this diary entry?')) {
+        if (!dateStr || !confirm('Are you sure you want to delete these notes?')) {
             return;
         }
         
@@ -148,8 +130,11 @@ class DiaryManager {
         calendar.diaryEntries = calendar.diaryEntries.filter(entry => entry.date !== dateStr);
         localStorage.setItem('diaryEntries', JSON.stringify(calendar.diaryEntries));
         
-        // व्यू अपडेट करें
-        this.updateDiaryView();
+        // व्यू अपडेट करें (रिपोर्ट कार्ड)
+        if (window.reportCardManager) {
+            window.reportCardManager.updateReportCardView();
+        }
+        
         this.closeDiaryFullView();
         
         // GitHub बैकअप करें
@@ -157,7 +142,7 @@ class DiaryManager {
             githubSync.autoBackup();
         }
         
-        calendar.showNotification('Diary entry deleted successfully!', 'success');
+        calendar.showNotification('Notes deleted successfully!', 'success');
     }
 
     // HTML escaping फंक्शन
@@ -167,7 +152,76 @@ class DiaryManager {
         div.textContent = text;
         return div.innerHTML;
     }
+
+    // रिपोर्ट कार्ड स्टैट्स अपडेट करें
+    updateReportStats() {
+        const reportStats = document.getElementById('report-stats');
+        if (!reportStats) return;
+        
+        // अगर रिपोर्ट कार्ड मैनेजर है तो उससे स्टैट्स लें
+        if (window.reportCardManager) {
+            const allReports = Object.values(window.reportCardManager.dailyReports);
+            const stats = this.calculateStats(allReports);
+            
+            reportStats.innerHTML = `
+                <div class="stat-item">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>${stats.totalDays} days</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span class="stat-value">${stats.averageCompletion}% avg</span>
+                </div>
+                <div class="stat-item">
+                    <i class="fas fa-trophy"></i>
+                    <span class="stat-value">${stats.excellentDays} excellent</span>
+                </div>
+            `;
+        }
+    }
+
+    // स्टैट्स कैलकुलेट करें
+    calculateStats(reports) {
+        let totalDays = reports.length;
+        let totalCompletion = 0;
+        let excellentDays = 0;
+        
+        reports.forEach(report => {
+            totalCompletion += report.percentage || 0;
+            if (report.status === 'excellent') excellentDays++;
+        });
+        
+        const averageCompletion = totalDays > 0 ? Math.round(totalCompletion / totalDays) : 0;
+        
+        return {
+            totalDays,
+            averageCompletion,
+            excellentDays
+        };
+    }
+
+    // टास्क कम्प्लीशन बदलने पर अपडेट करें
+    onTaskCompletionChanged(dateStr) {
+        // रिपोर्ट कार्ड अपडेट करें
+        if (window.reportCardManager) {
+            window.reportCardManager.updateReportForDate(dateStr);
+        }
+        
+        // स्टैट्स अपडेट करें
+        this.updateReportStats();
+    }
+
+    // रूटीन टास्क्स बदलने पर अपडेट करें
+    onRoutineTasksChanged() {
+        // रिपोर्ट कार्ड अपडेट करें
+        if (window.reportCardManager) {
+            window.reportCardManager.updateAllReportsOnTaskChange();
+        }
+        
+        // स्टैट्स अपडेट करें
+        this.updateReportStats();
+    }
 }
 
-// ग्लोबल डायरी मैनेजर
+// ग्लोबल डायरी मैनेजर (अब रिपोर्ट कार्ड सपोर्ट के साथ)
 window.diaryManager = new DiaryManager();
