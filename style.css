@@ -1536,3 +1536,142 @@ body {
 .day-completion-fill.empty {
     background-color: #9aa0a6;
 }
+
+
+/* =============================== */
+/* ANDROID WEBVIEW OPTIMIZATION */
+/* =============================== */
+
+/* Android के लिए specific styling */
+.android-app body {
+    height: 100vh !important;
+    width: 100vw !important;
+    position: fixed !important;
+    overflow: hidden !important;
+    background-color: #f8f9fa !important;
+}
+
+/* Android status bar के लिए padding */
+.android-app .top-nav {
+    padding-top: max(12px, env(safe-area-inset-top)) !important;
+}
+
+/* Android keyboard के लिए adjustment */
+.android-app .modal-content {
+    max-height: calc(90vh - env(safe-area-inset-bottom)) !important;
+}
+
+/* Android touch optimization */
+.android-app .menu-item,
+.android-app .nav-btn,
+.android-app .filter-btn,
+.android-app .today-btn {
+    min-height: 48px !important; /* Material Design touch target */
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Android scroll optimization */
+.android-app .calendar-grid {
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior: contain !important;
+}
+
+/* Android modal positioning */
+.android-app .modal {
+    align-items: flex-start !important;
+    padding-top: env(safe-area-inset-top) !important;
+}
+
+.android-app .modal-content {
+    margin-top: 20px !important;
+    max-height: calc(100vh - 40px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+}
+
+/* Android back button hint */
+.android-back-hint {
+    display: none !important;
+}
+
+.android-app .android-back-hint {
+    display: block !important;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+    z-index: 9999;
+    animation: fadeInOut 3s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+}
+
+/* Android keyboard open होने पर adjustment */
+.android-app.keyboard-open .modal-content {
+    max-height: 60vh !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    top: auto !important;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+/* Android specific button hover effects */
+@media (hover: none) and (pointer: coarse) {
+    .android-app .menu-item:active,
+    .android-app .nav-btn:active,
+    .android-app .filter-btn:active,
+    .android-app .today-btn:active {
+        background-color: #e8eaed !important;
+        transform: scale(0.98) !important;
+        transition: transform 0.1s ease !important;
+    }
+}
+
+/* Android screen rotation के लिए */
+@media (max-width: 768px) and (orientation: landscape) {
+    .android-app .calendar-day {
+        min-height: 50px !important;
+        padding: 5px 3px !important;
+    }
+    
+    .android-app .holiday-item-normal,
+    .android-app .holiday-item-cisf {
+        font-size: 7px !important;
+        padding: 1px 2px !important;
+    }
+}
+
+/* High DPI Android screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .android-app .holiday-dot,
+    .android-app .legend-color {
+        transform: scale(1.2) !important;
+    }
+    
+    .android-app .day-number {
+        font-weight: 700 !important;
+    }
+}
+
+/* Android Chrome browser bar हटाने के लिए */
+.android-app body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #1a73e8, #34a853, #fbbc04, #ea4335);
+    z-index: 9999;
+    display: none;
+}
+
+.android-app.fullscreen body::after {
+    display: block;
+}
+
