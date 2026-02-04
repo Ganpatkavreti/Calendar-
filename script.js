@@ -29,6 +29,70 @@ document.addEventListener('DOMContentLoaded', function() {
         // सर्च बार को शुरू में छुपाएं
         hideSearchBar();
     }
+
+    // इनिशियलाइज़ेशन
+function init() {
+    // कैलेंडर सेटअप
+    calendar.updateCalendar();
+    
+    // इवेंट लिसनर्स
+    setupEventListeners();
+    
+    // डिफॉल्ट व्यू सेट करें
+    switchView('month');
+    
+    // सर्च बार को शुरू में छुपाएं
+    hideSearchBar();
+    
+    // ✅ Android WebView optimization (यह नया जोड़ें)
+    if (window.androidWebView && window.androidWebView.isAndroidApp) {
+        console.log('Running in Android WebView - Applying optimizations');
+        
+        // Android specific adjustments
+        adjustUIForAndroid();
+    }
+}
+
+// ✅ यह नया function जोड़ें
+function adjustUIForAndroid() {
+    // Calendar grid height adjustment
+    const calendarGrid = document.getElementById('calendar-grid');
+    const topNav = document.querySelector('.top-nav');
+    
+    if (calendarGrid && topNav) {
+        const navHeight = topNav.offsetHeight;
+        const filterHeight = document.querySelector('.holiday-filter')?.offsetHeight || 0;
+        const headerHeight = document.querySelector('.calendar-header')?.offsetHeight || 0;
+        const legendHeight = document.querySelector('.holiday-legend')?.offsetHeight || 0;
+        
+        const availableHeight = window.innerHeight - navHeight - filterHeight - headerHeight - legendHeight - 20;
+        
+        calendarGrid.style.height = `${availableHeight}px`;
+        calendarGrid.style.maxHeight = `${availableHeight}px`;
+    }
+    
+    // Better touch targets for Android
+    document.querySelectorAll('button, .menu-item, .nav-btn').forEach(el => {
+        el.classList.add('touch-feedback');
+    });
+    
+    // Android back button listener
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            // Treat escape as back button on Android
+            if (window.androidWebView) {
+                window.androidWebView.handleBackButton({ preventDefault: () => {} });
+            }
+        }
+    });
+    
+    // Prevent zoom on Android
+    document.addEventListener('touchmove', (e) => {
+        if (e.touches.length > 1) {
+            e.preventDefault(); // Prevent pinch zoom
+        }
+    }, { passive: false });
+}
     
     // इवेंट लिसनर्स सेटअप
     function setupEventListeners() {
